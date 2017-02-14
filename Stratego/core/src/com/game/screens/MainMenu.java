@@ -26,7 +26,6 @@ public class MainMenu implements Screen, InputProcessor {
 	int selectedOption;
 	Color optionColor;
 	
-	String[] options = {"Start Game", "Load Game", "    Rules", "     Help", "  Settings"};
 	private static int OPTION_HEIGHT = 46;
 	private static int OPTION_WIDTH = 200;
 	private static int OPTION_OFFSET = 2;

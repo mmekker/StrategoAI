@@ -37,6 +37,20 @@ public class GameScreen implements Screen, InputProcessor {
 		sr.setColor(Color.BLACK);
 		for(int x = 0; x < 10; x++) {
 			for(int y = 10; y > 0; y--) {
+				//Water
+				if((x == 2 && y == 5)
+						|| (x == 2 && y == 6)
+						|| (x == 3 && y == 5)
+						|| (x == 3 && y == 6)
+						|| (x == 6 && y == 5)
+						|| (x == 6 && y == 6)
+						|| (x == 7 && y == 5)
+						|| (x == 7 && y == 6)) {
+					sr.setColor(Color.BLUE);
+				}
+				else {
+					sr.setColor(Color.BLACK);
+				}
 				sr.rect(((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x), ((Gdx.graphics.getHeight()/2)-250)+(y+1)+(49*(y-1)), 49, 49);
 			}
 		}
