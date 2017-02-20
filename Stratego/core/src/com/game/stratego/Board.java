@@ -1,68 +1,128 @@
 package com.game.stratego;
 
 public class Board {
-	private Piece[][] pieces;
+	private Piece[][] board;
+	private TrayPiece[] playerTray;
+	private TrayPiece[] computerTray;
 	
-	public static final int BOARD_SIZE = 10;
+	public static final int DEFAULT_BOARD_SIZE = 10;
+	public static final int NUMBER_OF_PIECES = 12;
 	
 	public Board() {
-		pieces = new Piece[BOARD_SIZE][BOARD_SIZE];
+		board = new Piece[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE];
+		playerTray = new TrayPiece[NUMBER_OF_PIECES];
+		playerTray[0] = new TrayPiece('1', 1); //1 Marshal
+		playerTray[1] = new TrayPiece('2', 1); //1 General
+		playerTray[2] = new TrayPiece('3', 2); //2 Colonels
+		playerTray[3] = new TrayPiece('4', 3); //3 Majors
+		playerTray[4] = new TrayPiece('5', 4); //4 Captains
+		playerTray[5] = new TrayPiece('6', 4); //4 Lieutenants
+		playerTray[6] = new TrayPiece('7', 4); //4 Sergeants
+		playerTray[7] = new TrayPiece('8', 5); //5 Miners
+		playerTray[8] = new TrayPiece('9', 8); //8 Scouts
+		playerTray[9] = new TrayPiece('S', 1); //1 Spy
+		playerTray[10] = new TrayPiece('B', 6); //6 Bombs
+		playerTray[11] = new TrayPiece('F', 1); //1 Flag
+		computerTray = playerTray.clone();
+	}
+	
+	public boolean validRank(char rank) {
+		for(int x = 0; x < NUMBER_OF_PIECES; x++) {
+			if(playerTray[x].getRank() == rank && playerTray[x].getRemaining() > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean movePiece(int x1, int y1, int x2, int y2) {
-		if(pieces[x1][y1] == null
-				|| pieces[x1][y1].getRank() == 'B'
-				|| pieces[x1][y1].getRank() == 'F') { //Illegal moves
+		if(x1 >= DEFAULT_BOARD_SIZE || y1 >= DEFAULT_BOARD_SIZE
+				|| x2 >= DEFAULT_BOARD_SIZE || y2 >= DEFAULT_BOARD_SIZE){ //move is off the board
 			return false;
 		}
-		else if(pieces[x2][y2] == null) { //if the spot is empty
-			pieces[x2][y2] = pieces[x1][y1];
-			pieces[x2][y2].setHasMoved(true);
-			pieces[x1][y1] = null;
+		else if(   (board[x1][y1].getRank() != '9') &&
+				   ((Math.abs(x1-x2) > 1 || Math.abs(y1-y2) > 1) //Move must be 1 space away (non-scout)
+				|| (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1))) { //No diagonals
+			return false;
+		}
+		else if(   (x1 == 2 && y1 == 4) //Check if either point is in the water
+				|| (x1 == 2 && y1 == 5)
+				|| (x1 == 3 && y1 == 4)
+				|| (x1 == 3 && y1 == 5)
+				|| (x1 == 6 && y1 == 4)
+				|| (x1 == 6 && y1 == 5)
+				|| (x1 == 7 && y1 == 4)
+				|| (x1 == 7 && y1 == 5)
+				
+				|| (x2 == 2 && y2 == 4)
+				|| (x2 == 2 && y2 == 5)
+				|| (x2 == 3 && y2 == 4)
+				|| (x2 == 3 && y2 == 5)
+				|| (x2 == 6 && y2 == 4)
+				|| (x2 == 6 && y2 == 5)
+				|| (x2 == 7 && y2 == 4)
+				|| (x2 == 7 && y2 == 5)) {
+			return false;
+		}
+		else if(board[x1][y1] == null
+				|| board[x1][y1].getRank() == 'B'
+				|| board[x1][y1].getRank() == 'F') { //Illegal moves
+			return false;
+		}
+		else if(board[x2][y2] == null) { //if the spot is empty
+			board[x2][y2] = board[x1][y1];
+			board[x2][y2].setIsRevealed(true);
+			board[x1][y1] = null;
 			return true;
 		}
-		else if(pieces[x1][y1].getTeamNumber() == pieces[x2][y2].getTeamNumber()) { //if they're on the same team
+		else if(board[x1][y1].getTeamNumber() == board[x2][y2].getTeamNumber()) { //if they're on the same team
 			return false;
 		}
 		else {
-			if(pieces[x2][y2].getRank() == 'F') { //Flag found
+			if(board[x2][y2].getRank() == 'F') { //Flag found
 				//Win
 			}
-			else if(pieces[x2][y2].getRank() == 'B') { //Bomb found
-				if(pieces[x1][y1].getRank() == '8') { //Bomb defused by miner
-					pieces[x2][y2] = pieces[x1][y1];
-					pieces[x2][y2].setHasMoved(true);
-					pieces[x1][y1] = null;
+			else if(board[x2][y2].getRank() == 'B') { //Bomb found
+				if(board[x1][y1].getRank() == '8') { //Bomb defused by miner
+					board[x2][y2] = board[x1][y1];
+					board[x2][y2].setIsRevealed(true);
+					board[x1][y1] = null;
 					return true;
 				}
 				else { 
-					pieces[x1][y1] = null; //Piece defeated by bomb
+					board[x1][y1] = null; //Piece defeated by bomb
 					return true;
 				}
 			}
-			else if(pieces[x1][y1].getRank() == 'S') { //Spy is attacking
-				if(pieces[x2][y2].getRank() == '1') { //if the spy is attacking a marshal
-					pieces[x2][y2] = pieces[x1][y1];
-					pieces[x2][y2].setHasMoved(true);
-					pieces[x1][y1] = null;
+			else if(board[x1][y1].getRank() == 'S') { //Spy is attacking
+				if(board[x2][y2].getRank() == '1') { //if the spy is attacking a marshal
+					board[x2][y2] = board[x1][y1];
+					board[x2][y2].setIsRevealed(true);
+					board[x1][y1] = null;
 					return true;
 				}
 				else {
-					pieces[x1][y1] = null; //Piece defeated
+					board[x1][y1] = null; //Piece defeated
 					return true;
 				}
 			}
 			else {
-				int rank1 = Integer.getInteger(Character.toString(pieces[x1][y1].getRank()));
-				int rank2 = Integer.getInteger(Character.toString(pieces[x2][y2].getRank()));
+				int rank1 = Character.getNumericValue(board[x1][y1].getRank());
+				int rank2 = Character.getNumericValue(board[x2][y2].getRank());
 				if(rank1 < rank2) { //Better piece lives
-					pieces[x2][y2] = pieces[x1][y1];
-					pieces[x2][y2].setHasMoved(true);
-					pieces[x1][y1] = null;
+					board[x2][y2] = board[x1][y1];
+					board[x2][y2].setIsRevealed(true);
+					board[x1][y1] = null;
+					return true;
+				}
+				else if(rank1 == rank2) {
+					board[x1][y1] = null;
+					board[x2][y2] = null;
 					return true;
 				}
 				else {
-					pieces[x1][y1] = null; //Piece defeated
+					board[x1][y1] = null; //Piece defeated
+					board[x2][y2].setIsRevealed(true);
 					return true;
 				}
 			}
@@ -70,4 +130,30 @@ public class Board {
 		}
 		return false;
 	}
+
+	public Piece[][] getBoard() {
+		return board;
+	}
+
+	public void setBoard(Piece[][] board) {
+		this.board = board;
+	}
+
+	public TrayPiece[] getPlayerTray() {
+		return playerTray;
+	}
+
+	public void setPlayerTray(TrayPiece[] playerTray) {
+		this.playerTray = playerTray;
+	}
+
+	public TrayPiece[] getComputerTray() {
+		return computerTray;
+	}
+
+	public void setComputerTray(TrayPiece[] computerTray) {
+		this.computerTray = computerTray;
+	}
+	
+	
 }
