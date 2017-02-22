@@ -40,11 +40,6 @@ public class Board {
 				|| x2 >= DEFAULT_BOARD_SIZE || y2 >= DEFAULT_BOARD_SIZE){ //move is off the board
 			return false;
 		}
-		else if(   (board[x1][y1].getRank() != '9') &&
-				   ((Math.abs(x1-x2) > 1 || Math.abs(y1-y2) > 1) //Move must be 1 space away (non-scout)
-				|| (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1))) { //No diagonals
-			return false;
-		}
 		else if(   (x1 == 2 && y1 == 4) //Check if either point is in the water
 				|| (x1 == 2 && y1 == 5)
 				|| (x1 == 3 && y1 == 4)
@@ -64,9 +59,22 @@ public class Board {
 				|| (x2 == 7 && y2 == 5)) {
 			return false;
 		}
+		else if(   (board[x1][y1].getRank() != '9') &&
+				   ((Math.abs(x1-x2) > 1 || Math.abs(y1-y2) > 1) //Move must be 1 space away (non-scout)
+				|| (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1))) { //No diagonals
+			return false;
+		}
+		else if(   (board[x1][y1].getRank() == '9') &&
+				   ((Math.abs(x1-x2) >= 1 && Math.abs(y1-y2) >= 1)
+				|| (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1))) { //No diagonals
+			return false;
+		}
 		else if(board[x1][y1] == null
 				|| board[x1][y1].getRank() == 'B'
 				|| board[x1][y1].getRank() == 'F') { //Illegal moves
+			return false;
+		}
+		else if(anyoneInTheWay(x1, y1, x2, y2)) {
 			return false;
 		}
 		else if(board[x2][y2] == null) { //if the spot is empty
@@ -128,6 +136,11 @@ public class Board {
 			}
 			
 		}
+		return false;
+	}
+	
+	private boolean anyoneInTheWay(int x1, int y1, int x2, int y2) {
+		
 		return false;
 	}
 
