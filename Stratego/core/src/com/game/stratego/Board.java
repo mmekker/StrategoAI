@@ -59,6 +59,11 @@ public class Board {
 				|| (x2 == 7 && y2 == 5)) {
 			return false;
 		}
+		else if(board[x1][y1] == null
+				|| board[x1][y1].getRank() == 'B'
+				|| board[x1][y1].getRank() == 'F') { //Illegal moves
+			return false;
+		}
 		else if(   (board[x1][y1].getRank() != '9') &&
 				   ((Math.abs(x1-x2) > 1 || Math.abs(y1-y2) > 1) //Move must be 1 space away (non-scout)
 				|| (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1))) { //No diagonals
@@ -67,11 +72,6 @@ public class Board {
 		else if(   (board[x1][y1].getRank() == '9') &&
 				   ((Math.abs(x1-x2) >= 1 && Math.abs(y1-y2) >= 1)
 				|| (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1))) { //No diagonals
-			return false;
-		}
-		else if(board[x1][y1] == null
-				|| board[x1][y1].getRank() == 'B'
-				|| board[x1][y1].getRank() == 'F') { //Illegal moves
 			return false;
 		}
 		else if(anyoneInTheWay(x1, y1, x2, y2)) {
