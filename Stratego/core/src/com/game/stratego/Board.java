@@ -48,7 +48,7 @@ public class Board {
 				|| (x1 == 6 && y1 == 5)
 				|| (x1 == 7 && y1 == 4)
 				|| (x1 == 7 && y1 == 5)
-				
+
 				|| (x2 == 2 && y2 == 4)
 				|| (x2 == 2 && y2 == 5)
 				|| (x2 == 3 && y2 == 4)
@@ -74,7 +74,8 @@ public class Board {
 				|| (Math.abs(x1-x2) == 1 && Math.abs(y1-y2) == 1))) { //No diagonals
 			return false;
 		}
-		else if(anyoneInTheWay(x1, y1, x2, y2)) {
+		else if(   (board[x1][y1].getRank() == '9') &&
+					someoneInTheWay(x1, y1, x2, y2)) {
 			return false;
 		}
 		else if(board[x2][y2] == null) { //if the spot is empty
@@ -139,7 +140,7 @@ public class Board {
 		return false;
 	}
 	
-	private boolean anyoneInTheWay(int x1, int y1, int x2, int y2) {
+	private boolean someoneInTheWay(int x1, int y1, int x2, int y2) {
 		
 		return false;
 	}

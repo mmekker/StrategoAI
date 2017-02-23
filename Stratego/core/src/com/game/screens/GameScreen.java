@@ -201,8 +201,22 @@ public class GameScreen implements Screen, InputProcessor {
 			int row = inBoardX / 50;
 			int col = inBoardY / 50;
 			if(selected == null) {
-				selected = new Point(row, col);
-				return true;
+				if(        (row == 2 && col == 4) //Check if either point is in the water
+						|| (row == 2 && col == 5)
+						|| (row == 3 && col == 4)
+						|| (row == 3 && col == 5)
+						|| (row == 6 && col == 4)
+						|| (row == 6 && col == 5)
+						|| (row == 7 && col == 4)
+						|| (row == 7 && col == 5)) {
+					selected = null;
+					return false;
+				}
+				else {
+					selected = new Point(row, col);
+					return true;
+				}
+
 			}
 			else {
 				if(match.getGameBoard().movePiece(selected.x, selected.y, row, col)) {
