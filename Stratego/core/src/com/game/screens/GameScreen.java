@@ -266,7 +266,19 @@ public class GameScreen implements Screen, InputProcessor {
 				}
 			}
 			else if(match.getState().equals("make")) {
-
+				if(selected != null) {
+					//Get Piece index
+					int i = (selected.y+selected.x)+(5*selected.x);
+					if(match.getGameBoard().getPlayerTray()[i].getRemaining() > 0) {
+						if(match.getBoard()[row][col] == null
+								&& col < (Board.DEFAULT_BOARD_SIZE/2)-1) {
+							match.getBoard()[row][col] = match.getGameBoard().getPlayerTray()[i].takePiece(0);
+							if(match.getGameBoard().isTrayEmpty(match.getGameBoard().getPlayerTray())) {
+								selected = null;
+							}
+						}
+					}
+				}
 			}
 		}
 		else if(screenX > 21 && screenX < 181

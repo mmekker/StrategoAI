@@ -155,7 +155,7 @@ public class Board {
 
 		if(Math.abs(x1-x2) == 0) { //Is vertical move
 			if(y1 > y2) {
-				for(int y = y2+2; y < y1; y++) {
+				for(int y = y2+1; y < y1; y++) {
 					if(board[x1][y] != null
 							|| isWater(x1,y)) {
 						return true;
@@ -163,7 +163,7 @@ public class Board {
 				}
 			}
 			else {
-				for(int y = y1+2; y < y2; y++) {
+				for(int y = y1+1; y < y2; y++) {
 					if(board[x1][y] != null
 							|| isWater(x1,y)) {
 						return true;
@@ -173,7 +173,7 @@ public class Board {
 		}
 		else { //Is horizontal move
 			if(x1 > x2) {
-				for(int x = x2+2; x < x1; x++) {
+				for(int x = x2+1; x < x1; x++) {
 					if(board[x][y1] != null
 							|| isWater(x,y1)) {
 						return true;
@@ -181,7 +181,7 @@ public class Board {
 				}
 			}
 			else {
-				for(int x = x1+2; x < x2; x++) {
+				for(int x = x1+1; x < x2; x++) {
 					if(board[x][y1] != null
 							|| isWater(x,y1)) {
 						return true;
