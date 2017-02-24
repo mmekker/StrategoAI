@@ -16,22 +16,20 @@ public class Match {
 	
 	public void update() {
 		if(state.equals("make")) {
-			for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
+			/*for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
 				for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-					if(!((x == 2 && y == 4)
-							|| (x == 2 && y == 5)
-							|| (x == 3 && y == 4)
-							|| (x == 3 && y == 5)
-							|| (x == 6 && y == 4)
-							|| (x == 6 && y == 5)
-							|| (x == 7 && y == 4)
-							|| (x == 7 && y == 5))) {
+					if(!Board.isWater(x,y)) {
 						int t = (int)(Math.random()*9)+1;
 						String rank = Integer.toString(t);
 						getBoard()[x][y] = new Piece(rank.charAt(0), (int)(Math.random()*2));
 					}
 				}
-			}
+			}*/
+			getBoard()[0][0] = new Piece('9', 0);
+			getBoard()[9][0] = new Piece('7', 0);
+			getBoard()[5][0] = new Piece('5', 1);
+			getBoard()[9][9] = new Piece('4', 1);
+
 			state = "play";
 		}
 		else if(state.equals("play")) {

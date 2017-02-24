@@ -40,23 +40,7 @@ public class Board {
 				|| x2 >= DEFAULT_BOARD_SIZE || y2 >= DEFAULT_BOARD_SIZE){ //move is off the board
 			return false;
 		}
-		else if(   (x1 == 2 && y1 == 4) //Check if either point is in the water
-				|| (x1 == 2 && y1 == 5)
-				|| (x1 == 3 && y1 == 4)
-				|| (x1 == 3 && y1 == 5)
-				|| (x1 == 6 && y1 == 4)
-				|| (x1 == 6 && y1 == 5)
-				|| (x1 == 7 && y1 == 4)
-				|| (x1 == 7 && y1 == 5)
-
-				|| (x2 == 2 && y2 == 4)
-				|| (x2 == 2 && y2 == 5)
-				|| (x2 == 3 && y2 == 4)
-				|| (x2 == 3 && y2 == 5)
-				|| (x2 == 6 && y2 == 4)
-				|| (x2 == 6 && y2 == 5)
-				|| (x2 == 7 && y2 == 4)
-				|| (x2 == 7 && y2 == 5)) {
+		else if(   isWater(x1,y1) || isWater(x2,y2)) {
 			return false;
 		}
 		else if(board[x1][y1] == null
@@ -139,9 +123,59 @@ public class Board {
 		}
 		return false;
 	}
+
+	public static boolean isWater(int x, int y) {
+		if(  	   (x == 2 && y == 4) //Check if the point is in the water
+				|| (x == 2 && y == 5)
+				|| (x == 3 && y == 4)
+				|| (x == 3 && y == 5)
+				|| (x == 6 && y == 4)
+				|| (x == 6 && y == 5)
+				|| (x == 7 && y == 4)
+				|| (x == 7 && y == 5)) {
+			return true;
+		}
+		return false;
+	}
 	
 	private boolean someoneInTheWay(int x1, int y1, int x2, int y2) {
-		
+
+		if(Math.abs(x1-x2) == 0) { //Is vertical move
+			if(y1 > y2) {
+				for(int y = y2+2; y < y1; y++) {
+					if(board[x1][y] != null
+							|| isWater(x1,y)) {
+						return true;
+					}
+				}
+			}
+			else {
+				for(int y = y1+2; y < y2; y++) {
+					if(board[x1][y] != null
+							|| isWater(x1,y)) {
+						return true;
+					}
+				}
+			}
+		}
+		else { //Is horizontal move
+			if(x1 > x2) {
+				for(int x = x2+2; x < x1; x++) {
+					if(board[x][y1] != null
+							|| isWater(x,y1)) {
+						return true;
+					}
+				}
+			}
+			else {
+				for(int x = x1+2; x < x2; x++) {
+					if(board[x][y1] != null
+							|| isWater(x,y1)) {
+						return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
 
