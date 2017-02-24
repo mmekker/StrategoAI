@@ -10,11 +10,8 @@ public class Match {
 		board = new Board();
 		currentTurn = 0;
 		state = "make";
-	}
-	
-	
-	public void update() {
-		if(state.equals("make")) {
+		getGameBoard().createComputerSetup();
+		//Random Pieces setup
 			/*for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
 				for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
 					if(!Board.isWater(x,y)) {
@@ -24,13 +21,15 @@ public class Match {
 					}
 				}
 			}*/
-			getGameBoard().createComputerSetup();
-			/*getBoard()[0][0] = new Piece('9', 0);
-			getBoard()[9][0] = new Piece('7', 0);
-			getBoard()[5][0] = new Piece('5', 1);
-			getBoard()[9][9] = new Piece('4', 1);*/
-
-			state = "play";
+	}
+	
+	
+	public void update() {
+		if(state.equals("make")) {
+			if(board.isTrayEmpty(board.getComputerTray())
+					&& board.isTrayEmpty(board.getPlayerTray())) {
+				state = "play";
+			}
 		}
 		else if(state.equals("play")) {
 			if(currentTurn == 1) { //Computer turn

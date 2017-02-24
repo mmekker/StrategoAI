@@ -100,7 +100,7 @@ public class GameScreen implements Screen, InputProcessor {
 						|| (x == 7 && y == 5)) {
 					sr.setColor(Color.CYAN);
 				} else if (match.getBoard()[x][y] == null) {
-					continue;
+					sr.setColor(Color.BLACK);
 				} else if (match.getBoard()[x][y].getTeamNumber() == 0) {
 					sr.setColor(Color.BLUE);
 				} else if (match.getBoard()[x][y].getTeamNumber() == 1) {
@@ -109,7 +109,8 @@ public class GameScreen implements Screen, InputProcessor {
 					sr.setColor(Color.BLACK);
 				}
 				sr.rect(((Gdx.graphics.getWidth() / 2) - 250) + (x + 1) + (49 * x), ((Gdx.graphics.getHeight() / 2) - 200) + (y + 1) + (49 * (y - 1)), 49, 49);
-				if (selected != null && selected.x == x && selected.y == y) {
+				if (match.getState().equals("play") && selected != null
+						&& selected.x == x && selected.y == y) {
 					sr.setColor(Color.YELLOW);
 					sr.rect(((Gdx.graphics.getWidth() / 2) - 250) + (x + 1) + (49 * x) + 15, ((Gdx.graphics.getHeight() / 2) - 200) + (y + 1) + (49 * (y - 1)) + 15, 20, 20);
 				}
@@ -123,8 +124,14 @@ public class GameScreen implements Screen, InputProcessor {
 		sr.rect(20, 75, 165, 488);
 		sr.setColor(Color.BLUE);
 		for(int x = 0; x < 2; x++) {
-			for(int y = 6; y > 0; y--) {
-				sr.rect((21)+(x+1)+(80*x), (75)+(y+1)+(80*(y-1)), 80, 80);
+			for(int y = 0; y < 6; y++) {
+				sr.setColor(Color.BLUE);
+				sr.rect((21)+(x+1)+(80*x), (75)+(y+1)+(80*y), 80, 80);
+				if (match.getState().equals("make") && selected != null
+						&& selected.x == x && selected.y == y) {
+					sr.setColor(Color.YELLOW);
+					sr.rect((21)+(x+1)+(80*x)+30, (75)+(y+1)+(80*y)+30, 20, 20);
+				}
 			}
 		}
 		//Computer Tray
@@ -132,8 +139,8 @@ public class GameScreen implements Screen, InputProcessor {
 		sr.rect(775, 75, 165, 488);
 		sr.setColor(Color.RED);
 		for(int x = 0; x < 2; x++) {
-			for(int y = 6; y > 0; y--) {
-				sr.rect((776)+(x+1)+(80*x), (75)+(y+1)+(80*(y-1)), 80, 80);
+			for(int y = 0; y < 6; y++) {
+				sr.rect((776)+(x+1)+(80*x), (75)+(y+1)+(80*y), 80, 80);
 			}
 		}
 	}
@@ -232,32 +239,44 @@ public class GameScreen implements Screen, InputProcessor {
 			int inBoardY = newY - ((Gdx.graphics.getHeight()/2)-250);
 			int row = inBoardX / 50;
 			int col = inBoardY / 50;
-			if(selected == null) {
-				if(Board.isWater(row,col)
-						|| match.getBoard()[row][col] == null
-						|| match.getBoard()[row][col].getTeamNumber() != match.getCurrentTurn()) {
-					selected = null;
-					return false;
+			if(match.getState().equals("play")) {
+				if (selected == null) {
+					if (Board.isWater(row, col)
+							|| match.getBoard()[row][col] == null
+							|| match.getBoard()[row][col].getTeamNumber() != match.getCurrentTurn()) {
+						selected = null;
+						return false;
+					} else {
+						selected = new Point(row, col);
+						return true;
+					}
+
+				} else {
+					if (match.getGameBoard().movePiece(selected.x, selected.y, row, col)) {
+						if (match.getCurrentTurn() == 0) match.setCurrentTurn(1);
+						else match.setCurrentTurn(0);
+						setMessage("Move (" + selected.x + "," + selected.y + ") to (" + row + "," + col + ")");
+						selected = null;
+						return true;
+					} else {
+						setMessage("Illegal Move");
+						selected = null;
+						return false;
+					}
 				}
-				else {
-					selected = new Point(row, col);
-					return true;
-				}
+			}
+			else if(match.getState().equals("make")) {
 
 			}
-			else {
-				if(match.getGameBoard().movePiece(selected.x, selected.y, row, col)) {
-					if(match.getCurrentTurn() == 0) match.setCurrentTurn(1);
-					else match.setCurrentTurn(0);
-					setMessage("Move (" + selected.x + "," + selected.y + ") to (" + row + "," + col + ")");
-					selected = null;
-					return true;
-				}
-				else {
-					setMessage("Illegal Move");
-					selected = null;
-					return false;
-				}
+		}
+		else if(screenX > 21 && screenX < 181
+				&& newY > 75 && newY < 555 ) { //Inside the left tray
+			int inBoardX = screenX - 21;
+			int inBoardY = newY - 75;
+			int row = inBoardX / 80;
+			int col = inBoardY / 80;
+			if(match.getState().equals("make")) {
+				selected = new Point(row,col);
 			}
 		}
 		return false;
