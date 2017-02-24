@@ -33,7 +33,9 @@ public class Match {
 			state = "play";
 		}
 		else if(state.equals("play")) {
-			
+			if(currentTurn == 1) { //Computer turn
+				//getComputerMove()
+			}
 		}
 	}
 

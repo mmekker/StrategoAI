@@ -202,7 +202,8 @@ public class GameScreen implements Screen, InputProcessor {
 			int col = inBoardY / 50;
 			if(selected == null) {
 				if(Board.isWater(row,col)
-						|| match.getBoard()[row][col] == null) {
+						|| match.getBoard()[row][col] == null
+						|| match.getBoard()[row][col].getTeamNumber() != match.getCurrentTurn()) {
 					selected = null;
 					return false;
 				}
@@ -214,6 +215,8 @@ public class GameScreen implements Screen, InputProcessor {
 			}
 			else {
 				if(match.getGameBoard().movePiece(selected.x, selected.y, row, col)) {
+					if(match.getCurrentTurn() == 0) match.setCurrentTurn(1);
+					else match.setCurrentTurn(0);
 					setMessage("Move (" + selected.x + "," + selected.y + ") to (" + row + "," + col + ")");
 					selected = null;
 					return true;
