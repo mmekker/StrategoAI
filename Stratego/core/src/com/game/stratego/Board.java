@@ -23,7 +23,20 @@ public class Board {
 		playerTray[9] = new TrayPiece('S', 1); //1 Spy
 		playerTray[10] = new TrayPiece('B', 6); //6 Bombs
 		playerTray[11] = new TrayPiece('F', 1); //1 Flag
-		computerTray = playerTray.clone();
+
+		computerTray = new TrayPiece[NUMBER_OF_PIECES];
+		computerTray[0] = new TrayPiece('1', 1); //1 Marshal
+		computerTray[1] = new TrayPiece('2', 1); //1 General
+		computerTray[2] = new TrayPiece('3', 2); //2 Colonels
+		computerTray[3] = new TrayPiece('4', 3); //3 Majors
+		computerTray[4] = new TrayPiece('5', 4); //4 Captains
+		computerTray[5] = new TrayPiece('6', 4); //4 Lieutenants
+		computerTray[6] = new TrayPiece('7', 4); //4 Sergeants
+		computerTray[7] = new TrayPiece('8', 5); //5 Miners
+		computerTray[8] = new TrayPiece('9', 8); //8 Scouts
+		computerTray[9] = new TrayPiece('S', 1); //1 Spy
+		computerTray[10] = new TrayPiece('B', 6); //6 Bombs
+		computerTray[11] = new TrayPiece('F', 1); //1 Flag
 	}
 	
 	public boolean validRank(char rank) {

@@ -156,15 +156,28 @@ public class GameScreen implements Screen, InputProcessor {
 		TrayPiece[] playerTray = match.getGameBoard().getPlayerTray();
 		for(int x = 0; x < 2; x++) {
 			for(int y = 0; y < 6; y++) {
+				//Get Piece index
 				int i = (y+x)+(5*x);
+				//Draw piece rank
+				font.setColor(Color.WHITE);
 				font.draw(batch, Character.toString(playerTray[i].getRank()), (21)+(x+1)+(80*x)+35,(75)+(y+1)+(80*y)+45);
+				//Draw piece remaining
+				font.setColor(Color.YELLOW);
+				font.draw(batch, Integer.toString(playerTray[i].getRemaining()), (21)+(x+1)+(80*x)+65,(75)+(y+1)+(80*y)+75);
+
 			}
 		}
 		TrayPiece[] computerTray = match.getGameBoard().getComputerTray();
 		for(int x = 0; x < 2; x++) {
 			for(int y = 0; y < 6; y++) {
+				//Get Piece index
 				int i = (y+x)+(5*x);
+				//Draw piece rank
+				font.setColor(Color.WHITE);
 				font.draw(batch, Character.toString(computerTray[i].getRank()), (776)+(x+1)+(80*x)+35,(75)+(y+1)+(80*y)+45);
+				//Draw piece remaining
+				font.setColor(Color.YELLOW);
+				font.draw(batch, Integer.toString(computerTray[i].getRemaining()), (776)+(x+1)+(80*x)+65,(75)+(y+1)+(80*y)+75);
 			}
 		}
 	}
