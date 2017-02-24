@@ -8,7 +8,6 @@ public class Match {
 	
 	public Match() {
 		board = new Board();
-		
 		currentTurn = 0;
 		state = "make";
 	}
@@ -25,10 +24,11 @@ public class Match {
 					}
 				}
 			}*/
-			getBoard()[0][0] = new Piece('9', 0);
+			getGameBoard().createComputerSetup();
+			/*getBoard()[0][0] = new Piece('9', 0);
 			getBoard()[9][0] = new Piece('7', 0);
 			getBoard()[5][0] = new Piece('5', 1);
-			getBoard()[9][9] = new Piece('4', 1);
+			getBoard()[9][9] = new Piece('4', 1);*/
 
 			state = "play";
 		}

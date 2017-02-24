@@ -179,6 +179,39 @@ public class Board {
 		return false;
 	}
 
+	public void createComputerSetup() {
+		int flagSpot = (int) (Math.random()*9);
+		board[flagSpot][9] = computerTray[11].takePiece(1);
+		for(int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
+			for(int y = DEFAULT_BOARD_SIZE-1; y > DEFAULT_BOARD_SIZE/2; y--) {
+				if(board[x][y] == null
+						&& !isWater(x,y)) {
+					board[x][y] = randomPiece(computerTray, 1);
+				}
+			}
+		}
+	}
+
+	public Piece randomPiece(TrayPiece[] tray, int teamNumber) {
+		int randomSlot;
+		while(!isTrayEmpty(tray)) {
+			randomSlot = (int)(Math.random()*11);
+			if(tray[randomSlot].getRemaining() > 0) {
+				return tray[randomSlot].takePiece(teamNumber);
+			}
+		}
+		return null;
+	}
+
+	public boolean isTrayEmpty(TrayPiece[] tray) {
+		for(int x = 0; x < tray.length; x++) {
+			if(tray[x].getRemaining()>0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public Piece[][] getBoard() {
 		return board;
 	}

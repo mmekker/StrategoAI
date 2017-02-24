@@ -1,7 +1,5 @@
 package com.game.screens;
 
-import java.awt.Point;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
@@ -15,6 +13,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.game.stratego.Board;
 import com.game.stratego.Match;
 import com.game.stratego.Stratego;
+import com.game.stratego.TrayPiece;
+
+import java.awt.*;
 
 public class GameScreen implements Screen, InputProcessor {
 	Stratego game;
@@ -45,6 +46,7 @@ public class GameScreen implements Screen, InputProcessor {
 		match.update();
 		
 		sr.begin(ShapeType.Filled);
+
 		//Draw top left menu button
 		sr.setColor(Color.LIGHT_GRAY);
 		sr.rect(0, (Gdx.graphics.getHeight()-27), 40, 27);
@@ -52,59 +54,12 @@ public class GameScreen implements Screen, InputProcessor {
 		sr.rect(10, (Gdx.graphics.getHeight()-10), 20, 4);
 		sr.rect(10, (Gdx.graphics.getHeight()-15), 20, 4);
 		sr.rect(10, (Gdx.graphics.getHeight()-20), 20, 4);
+
 		//Draw board
-		sr.setColor(Color.WHITE);
-		sr.rect((Gdx.graphics.getWidth()/2)-250, (Gdx.graphics.getHeight()/2)-250, 501, 502);
-		sr.setColor(Color.BLACK);
-		for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
-			for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-				//Water
-				if((x == 2 && y == 4)
-						|| (x == 2 && y == 5)
-						|| (x == 3 && y == 4)
-						|| (x == 3 && y == 5)
-						|| (x == 6 && y == 4)
-						|| (x == 6 && y == 5)
-						|| (x == 7 && y == 4)
-						|| (x == 7 && y == 5)) {
-					sr.setColor(Color.CYAN);
-				}
-				else if(match.getBoard()[x][y] == null) {
-					continue;
-				}
-				else if(match.getBoard()[x][y].getTeamNumber() == 0){
-					sr.setColor(Color.BLUE);
-				}
-				else if(match.getBoard()[x][y].getTeamNumber() == 1){
-					sr.setColor(Color.RED);
-				}
-				else {
-					sr.setColor(Color.BLACK);
-				}
-				sr.rect(((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x), ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1)), 49, 49);
-				if(selected != null && selected.x == x && selected.y == y) {
-					sr.setColor(Color.YELLOW);
-					sr.rect(((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x) + 15, ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1))+15, 20, 20);
-				}
-			}
-		}
+		drawBoardShapes();
+
 		//Draw trays
-		sr.setColor(Color.WHITE);
-		sr.rect(20, 75, 165, 488);
-		sr.setColor(Color.BLACK);
-		for(int x = 0; x < 2; x++) {
-			for(int y = 6; y > 0; y--) {
-				sr.rect((21)+(x+1)+(80*x), (75)+(y+1)+(80*(y-1)), 80, 80);
-			}
-		}
-		sr.setColor(Color.WHITE);
-		sr.rect(775, 75, 165, 488);
-		sr.setColor(Color.BLACK);
-		for(int x = 0; x < 2; x++) {
-			for(int y = 6; y > 0; y--) {
-				sr.rect((776)+(x+1)+(80*x), (75)+(y+1)+(80*(y-1)), 80, 80);
-			}
-		}
+		drawTrayShapes();
 		
 		//Draw message box
 		sr.setColor(Color.WHITE);
@@ -117,7 +72,73 @@ public class GameScreen implements Screen, InputProcessor {
 		layout.setText(font, message);
 		font.setColor(Color.BLACK);
 		font.draw(batch, message, ((Gdx.graphics.getWidth()/2)-(layout.width/2)), 37);
+
+		//Write Board text
+		writeBoardText();
+
+		//Write Tray text
+		writeTrayText();
 		
+		batch.end();
+	}
+
+	/************Start Draw Methods***************/
+	public void drawBoardShapes() {
+		sr.setColor(Color.WHITE);
+		sr.rect((Gdx.graphics.getWidth() / 2) - 250, (Gdx.graphics.getHeight() / 2) - 250, 501, 502);
+		sr.setColor(Color.BLACK);
+		for (int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
+			for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
+				//Water
+				if ((x == 2 && y == 4)
+						|| (x == 2 && y == 5)
+						|| (x == 3 && y == 4)
+						|| (x == 3 && y == 5)
+						|| (x == 6 && y == 4)
+						|| (x == 6 && y == 5)
+						|| (x == 7 && y == 4)
+						|| (x == 7 && y == 5)) {
+					sr.setColor(Color.CYAN);
+				} else if (match.getBoard()[x][y] == null) {
+					continue;
+				} else if (match.getBoard()[x][y].getTeamNumber() == 0) {
+					sr.setColor(Color.BLUE);
+				} else if (match.getBoard()[x][y].getTeamNumber() == 1) {
+					sr.setColor(Color.RED);
+				} else {
+					sr.setColor(Color.BLACK);
+				}
+				sr.rect(((Gdx.graphics.getWidth() / 2) - 250) + (x + 1) + (49 * x), ((Gdx.graphics.getHeight() / 2) - 200) + (y + 1) + (49 * (y - 1)), 49, 49);
+				if (selected != null && selected.x == x && selected.y == y) {
+					sr.setColor(Color.YELLOW);
+					sr.rect(((Gdx.graphics.getWidth() / 2) - 250) + (x + 1) + (49 * x) + 15, ((Gdx.graphics.getHeight() / 2) - 200) + (y + 1) + (49 * (y - 1)) + 15, 20, 20);
+				}
+			}
+		}
+	}
+
+	public void drawTrayShapes() {
+		//Player tray
+		sr.setColor(Color.WHITE);
+		sr.rect(20, 75, 165, 488);
+		sr.setColor(Color.BLUE);
+		for(int x = 0; x < 2; x++) {
+			for(int y = 6; y > 0; y--) {
+				sr.rect((21)+(x+1)+(80*x), (75)+(y+1)+(80*(y-1)), 80, 80);
+			}
+		}
+		//Computer Tray
+		sr.setColor(Color.WHITE);
+		sr.rect(775, 75, 165, 488);
+		sr.setColor(Color.RED);
+		for(int x = 0; x < 2; x++) {
+			for(int y = 6; y > 0; y--) {
+				sr.rect((776)+(x+1)+(80*x), (75)+(y+1)+(80*(y-1)), 80, 80);
+			}
+		}
+	}
+
+	public void writeBoardText() {
 		for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
 			for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
 				if(match.getBoard()[x][y] != null) {
@@ -129,9 +150,25 @@ public class GameScreen implements Screen, InputProcessor {
 				}
 			}
 		}
-		
-		batch.end();
 	}
+
+	public void writeTrayText() {
+		TrayPiece[] playerTray = match.getGameBoard().getPlayerTray();
+		for(int x = 0; x < 2; x++) {
+			for(int y = 0; y < 6; y++) {
+				int i = (y+x)+(5*x);
+				font.draw(batch, Character.toString(playerTray[i].getRank()), (21)+(x+1)+(80*x)+35,(75)+(y+1)+(80*y)+45);
+			}
+		}
+		TrayPiece[] computerTray = match.getGameBoard().getComputerTray();
+		for(int x = 0; x < 2; x++) {
+			for(int y = 0; y < 6; y++) {
+				int i = (y+x)+(5*x);
+				font.draw(batch, Character.toString(computerTray[i].getRank()), (776)+(x+1)+(80*x)+35,(75)+(y+1)+(80*y)+45);
+			}
+		}
+	}
+	/**************End Draw Methods***************/
 	
 	public void setMessage(String message) {
 		if(message.length() > 60) {
@@ -141,35 +178,17 @@ public class GameScreen implements Screen, InputProcessor {
 	}
 	
 	@Override
-	public void show() {
-
-	}
-
+	public void show() {}
 	@Override
-	public void resize(int width, int height) {
-
-	}
-
+	public void resize(int width, int height) {}
 	@Override
-	public void pause() {
-
-	}
-
+	public void pause() {}
 	@Override
-	public void resume() {
-
-	}
-
+	public void resume() {}
 	@Override
-	public void hide() {
-
-	}
-
+	public void hide() {}
 	@Override
-	public void dispose() {
-
-	}
-
+	public void dispose() {}
 	@Override
 	public boolean keyDown(int keycode) {return false;}
 	@Override

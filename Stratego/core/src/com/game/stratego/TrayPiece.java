@@ -10,7 +10,11 @@ public class TrayPiece {
 	}
 	
 	public Piece takePiece(int teamNumber) {
-		return (new Piece(rank, teamNumber));
+		if(remaining > 0) {
+			remaining--;
+			return (new Piece(rank, teamNumber));
+		}
+		return null;
 	}
 
 	public char getRank() {
