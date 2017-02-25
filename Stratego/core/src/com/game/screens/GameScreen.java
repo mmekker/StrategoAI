@@ -45,7 +45,7 @@ public class GameScreen implements Screen, InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		if(Gdx.input.isKeyPressed(Input.Keys.S)
-				&& !match.getGameBoard().isTrayEmpty(match.getGameBoard().getPlayerTray())) {
+				&& match.getState().equals("make")) {
 			match.getGameBoard().createPlayerSetup();
 		}
 		match.update();
@@ -161,11 +161,18 @@ public class GameScreen implements Screen, InputProcessor {
 		for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
 			for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
 				if(match.getBoard()[x][y] != null) {
-					if(match.getBoard()[x][y].isRevealed()) {
-						font.setColor(Color.LIME);
+					if(match.getBoard()[x][y].getTeamNumber() == 0) {
+						if(match.getBoard()[x][y].isRevealed()) {
+							font.setColor(Color.LIME);
+						}else font.setColor(Color.WHITE);
+						font.draw(batch, Character.toString(match.getBoard()[x][y].getRank()), ((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x)+20, ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1))+30);
 					}
-					else font.setColor(Color.WHITE);
-					font.draw(batch, Character.toString(match.getBoard()[x][y].getRank()), ((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x)+20, ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1))+30);
+					else if(match.getBoard()[x][y].getTeamNumber() == 1) {
+						if(match.getBoard()[x][y].isRevealed()) {
+							font.setColor(Color.WHITE);
+							font.draw(batch, Character.toString(match.getBoard()[x][y].getRank()), ((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x)+20, ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1))+30);
+						}
+					}
 				}
 			}
 		}

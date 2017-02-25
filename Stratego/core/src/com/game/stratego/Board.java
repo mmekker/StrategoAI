@@ -82,6 +82,7 @@ public class Board {
 		}
 		else {
 			if(board[x2][y2].getRank() == 'F') { //Flag found
+				returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
 				board[x2][y2] = board[x1][y1];
 				board[x2][y2].setIsRevealed(true);
 				board[x1][y1] = null;
@@ -91,24 +92,28 @@ public class Board {
 			}
 			else if(board[x2][y2].getRank() == 'B') { //Bomb found
 				if(board[x1][y1].getRank() == '8') { //Bomb defused by miner
-					board[x2][y2] = board[x1][y1];
-					board[x2][y2].setIsRevealed(true);
-					board[x1][y1] = null;
-					return true;
-				}
-				else { 
-					board[x1][y1] = null; //Piece defeated by bomb
-					return true;
-				}
-			}
-			else if(board[x1][y1].getRank() == 'S') { //Spy is attacking
-				if(board[x2][y2].getRank() == '1') { //if the spy is attacking a marshal
+					returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
 					board[x2][y2] = board[x1][y1];
 					board[x2][y2].setIsRevealed(true);
 					board[x1][y1] = null;
 					return true;
 				}
 				else {
+					returnToTray(board[x1][y1].getRank(), board[x1][y1].getTeamNumber());
+					board[x1][y1] = null; //Piece defeated by bomb
+					return true;
+				}
+			}
+			else if(board[x1][y1].getRank() == 'S') { //Spy is attacking
+				if(board[x2][y2].getRank() == '1') { //if the spy is attacking a marshal
+					returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
+					board[x2][y2] = board[x1][y1];
+					board[x2][y2].setIsRevealed(true);
+					board[x1][y1] = null;
+					return true;
+				}
+				else {
+					returnToTray(board[x1][y1].getRank(), board[x1][y1].getTeamNumber());
 					board[x1][y1] = null; //Piece defeated
 					return true;
 				}
@@ -117,17 +122,21 @@ public class Board {
 				int rank1 = Character.getNumericValue(board[x1][y1].getRank());
 				int rank2 = Character.getNumericValue(board[x2][y2].getRank());
 				if(rank1 < rank2) { //Better piece lives
+					returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
 					board[x2][y2] = board[x1][y1];
 					board[x2][y2].setIsRevealed(true);
 					board[x1][y1] = null;
 					return true;
 				}
 				else if(rank1 == rank2) {
+					returnToTray(board[x1][y1].getRank(), board[x1][y1].getTeamNumber());
+					returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
 					board[x1][y1] = null;
 					board[x2][y2] = null;
 					return true;
 				}
 				else {
+					returnToTray(board[x1][y1].getRank(), board[x1][y1].getTeamNumber());
 					board[x1][y1] = null; //Piece defeated
 					board[x2][y2].setIsRevealed(true);
 					return true;
@@ -190,6 +199,22 @@ public class Board {
 			}
 		}
 		return false;
+	}
+
+	public void returnToTray(char rank, int teamNumber) {
+		System.out.println("Rank: " + rank + ", TeamNumber: " + teamNumber);
+		for(int x = 0; x < NUMBER_OF_PIECES; x++) {
+			if(teamNumber == 0) {
+				if(playerTray[x].getRank() == rank) {
+					playerTray[x].returnPiece();
+				}
+			}
+			else {
+				if(computerTray[x].getRank() == rank) {
+					computerTray[x].returnPiece();
+				}
+			}
+		}
 	}
 
 	public void createComputerSetup() {

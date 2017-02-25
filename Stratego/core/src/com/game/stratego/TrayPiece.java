@@ -8,13 +8,17 @@ public class TrayPiece {
 		this.rank = rank;
 		this.remaining = remaining;
 	}
-	
+
 	public Piece takePiece(int teamNumber) {
 		if(remaining > 0) {
 			remaining--;
 			return (new Piece(rank, teamNumber));
 		}
 		return null;
+	}
+
+	public void returnPiece() {
+		remaining++;
 	}
 
 	public char getRank() {
