@@ -67,6 +67,11 @@ public class GameScreen implements Screen, InputProcessor {
 		sr.rect(10, (Gdx.graphics.getHeight()-15), 20, 4);
 		sr.rect(10, (Gdx.graphics.getHeight()-20), 20, 4);
 
+		/*//Draw Turn Indicator
+		if(match.getCurrentTurn() == 0) sr.setColor(Color.BLUE);
+		else sr.setColor(Color.RED);
+		sr.rect((Gdx.graphics.getWidth()/2)-20, (Gdx.graphics.getHeight()-50), 40, 40);*/
+
 		//Draw board
 		drawBoardShapes();
 
