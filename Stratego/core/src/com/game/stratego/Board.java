@@ -4,6 +4,8 @@ public class Board {
 	private Piece[][] board;
 	private TrayPiece[] playerTray;
 	private TrayPiece[] computerTray;
+	private boolean gameFinished;
+	private int winner;
 	
 	public static final int DEFAULT_BOARD_SIZE = 10;
 	public static final int NUMBER_OF_PIECES = 12;
@@ -37,15 +39,9 @@ public class Board {
 		computerTray[9] = new TrayPiece('S', 1); //1 Spy
 		computerTray[10] = new TrayPiece('B', 6); //6 Bombs
 		computerTray[11] = new TrayPiece('F', 1); //1 Flag
-	}
-	
-	public boolean validRank(char rank) {
-		for(int x = 0; x < NUMBER_OF_PIECES; x++) {
-			if(playerTray[x].getRank() == rank && playerTray[x].getRemaining() > 0) {
-				return true;
-			}
-		}
-		return false;
+
+		gameFinished = false;
+		winner = -1;
 	}
 	
 	public boolean movePiece(int x1, int y1, int x2, int y2) {
@@ -86,7 +82,12 @@ public class Board {
 		}
 		else {
 			if(board[x2][y2].getRank() == 'F') { //Flag found
-				//Win
+				board[x2][y2] = board[x1][y1];
+				board[x2][y2].setIsRevealed(true);
+				board[x1][y1] = null;
+				gameFinished = true;
+				winner = board[x2][y2].getTeamNumber();
+				return true;
 			}
 			else if(board[x2][y2].getRank() == 'B') { //Bomb found
 				if(board[x1][y1].getRank() == '8') { //Bomb defused by miner
@@ -134,7 +135,6 @@ public class Board {
 			}
 			
 		}
-		return false;
 	}
 
 	public static boolean isWater(int x, int y) {
@@ -205,6 +205,19 @@ public class Board {
 		}
 	}
 
+	public void createPlayerSetup() {
+		int flagSpot = (int) (Math.random()*9);
+		board[flagSpot][0] = playerTray[11].takePiece(0);
+		for(int x = 0; x < DEFAULT_BOARD_SIZE; x++) {
+			for(int y = 0; y < (DEFAULT_BOARD_SIZE/2)-1; y++) {
+				if(board[x][y] == null
+						&& !isWater(x,y)) {
+					board[x][y] = randomPiece(playerTray, 0);
+				}
+			}
+		}
+	}
+
 	public Piece randomPiece(TrayPiece[] tray, int teamNumber) {
 		int randomSlot;
 		while(!isTrayEmpty(tray)) {
@@ -248,6 +261,12 @@ public class Board {
 	public void setComputerTray(TrayPiece[] computerTray) {
 		this.computerTray = computerTray;
 	}
-	
-	
+
+	public boolean isGameFinished() {return gameFinished;}
+
+	public void setGameFinished(boolean gameFinished) {this.gameFinished = gameFinished;
+	}
+	public int getWinner() {return winner;}
+
+	public void setWinner(int winner) {this.winner = winner;}
 }

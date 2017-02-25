@@ -1,26 +1,21 @@
 package com.game.stratego;
 
+import com.game.screens.GameScreen;
+
 public class Match {
 	private Board board;
+	private GameScreen game;
 	
 	private int currentTurn; //0 = Player; 1 = Computer
 	private String state;
 	
-	public Match() {
+	public Match(GameScreen game) {
 		board = new Board();
 		currentTurn = 0;
 		state = "make";
+		this.game = game;
 		getGameBoard().createComputerSetup();
-		//Random Pieces setup
-			/*for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
-				for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-					if(!Board.isWater(x,y)) {
-						int t = (int)(Math.random()*9)+1;
-						String rank = Integer.toString(t);
-						getBoard()[x][y] = new Piece(rank.charAt(0), (int)(Math.random()*2));
-					}
-				}
-			}*/
+		//getGameBoard().createPlayerSetup();
 	}
 	
 	
@@ -33,7 +28,23 @@ public class Match {
 		}
 		else if(state.equals("play")) {
 			if(currentTurn == 1) { //Computer turn
-				//getComputerMove()
+				int x1 = (int)(Math.random()*10);
+				int y1 = (int)(Math.random()*10);
+				int x2 = (int)(Math.random()*10);
+				int y2 = (int)(Math.random()*10);
+				while(getBoard()[x1][y1] != null
+						&& getBoard()[x1][y1].getTeamNumber() == 0
+						|| !getGameBoard().movePiece(x1, y1, x2, y2)) {
+					x1 = (int)(Math.random()*10);
+					y1 = (int)(Math.random()*10);
+					x2 = (int)(Math.random()*10);
+					y2 = (int)(Math.random()*10);
+				}
+				setCurrentTurn(0);
+				game.setMessage("Move (" + x1 + "," + y1 + ") to (" + x2 + "," + y2 + ")");
+			}
+			if(board.isGameFinished()) {
+				state = "end";
 			}
 		}
 	}

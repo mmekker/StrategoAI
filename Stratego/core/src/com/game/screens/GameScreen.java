@@ -1,6 +1,7 @@
 package com.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -33,7 +34,7 @@ public class GameScreen implements Screen, InputProcessor {
 		sr = new ShapeRenderer();
 		font = new BitmapFont();
 		batch = new SpriteBatch();
-		match = new Match();
+		match = new Match(this);
 		selected = null;
 		message = "";
 	}
@@ -42,8 +43,19 @@ public class GameScreen implements Screen, InputProcessor {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
+		if(Gdx.input.isKeyPressed(Input.Keys.S)
+				&& !match.getGameBoard().isTrayEmpty(match.getGameBoard().getPlayerTray())) {
+			match.getGameBoard().createPlayerSetup();
+		}
 		match.update();
+
+		if(match.getGameBoard().isGameFinished()) {
+			if(match.getGameBoard().getWinner() == 0) {
+				setMessage("You win! Congratulations!");
+			}
+			else setMessage("Oh no. You lost.");
+		}
 		
 		sr.begin(ShapeType.Filled);
 
@@ -212,13 +224,7 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public boolean keyDown(int keycode) {return false;}
 	@Override
-	public boolean keyUp(int keycode) {
-		if(match.getGameBoard().movePiece(0, 0, 0, 1)) {
-			setMessage("Move (0,0) to (0,1)");
-		}
-		else setMessage("Illegal Move");
-		return false;
-	}
+	public boolean keyUp(int keycode) {return false;}
 	@Override
 	public boolean keyTyped(char character) {return false;}
 	@Override
