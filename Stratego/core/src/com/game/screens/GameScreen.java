@@ -26,7 +26,7 @@ public class GameScreen implements Screen, InputProcessor {
 	
 	private Match match;
 	private Point selected;
-	private String message;
+	private String message;		//TODO: Add who took who into the messages
 	
 	public GameScreen(Stratego game) {
 		Gdx.input.setInputProcessor(this);

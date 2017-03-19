@@ -1,10 +1,12 @@
 package com.game.stratego;
 
+import com.game.ai.AI;
 import com.game.screens.GameScreen;
 
 public class Match {
 	private Board board;
 	private GameScreen game;
+	private AI computerPlayer;
 	
 	private int currentTurn; //0 = Player; 1 = Computer
 	private String state;
@@ -16,6 +18,7 @@ public class Match {
 		this.game = game;
 		getGameBoard().createComputerSetup();
 		//getGameBoard().createPlayerSetup();
+		computerPlayer = new AI(this.getBoard().clone());
 	}
 	
 	
@@ -28,6 +31,7 @@ public class Match {
 		}
 		else if(state.equals("play")) {
 			if(currentTurn == 1) { //Computer turn
+				computerPlayer.getMove(this.getBoard().clone());
 				int x1 = (int)(Math.random()*10);
 				int y1 = (int)(Math.random()*10);
 				int x2 = (int)(Math.random()*10);
