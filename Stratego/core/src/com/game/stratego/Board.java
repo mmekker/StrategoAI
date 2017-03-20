@@ -74,6 +74,7 @@ public class Board {
 		else if(board[x2][y2] == null) { //if the spot is empty
 			board[x2][y2] = board[x1][y1];
 			board[x2][y2].setIsRevealed(true);
+			board[x2][y2].setHasMoved(true);
 			board[x1][y1] = null;
 			return true;
 		}
@@ -85,6 +86,7 @@ public class Board {
 				returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
 				board[x2][y2] = board[x1][y1];
 				board[x2][y2].setIsRevealed(true);
+				board[x2][y2].setHasMoved(true);
 				board[x1][y1] = null;
 				gameFinished = true;
 				winner = board[x2][y2].getTeamNumber();
@@ -95,10 +97,12 @@ public class Board {
 					returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
 					board[x2][y2] = board[x1][y1];
 					board[x2][y2].setIsRevealed(true);
+					board[x2][y2].setHasMoved(true);
 					board[x1][y1] = null;
 					return true;
 				}
 				else {
+					board[x2][y2].setIsRevealed(true);
 					returnToTray(board[x1][y1].getRank(), board[x1][y1].getTeamNumber());
 					board[x1][y1] = null; //Piece defeated by bomb
 					return true;
@@ -109,6 +113,7 @@ public class Board {
 					returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
 					board[x2][y2] = board[x1][y1];
 					board[x2][y2].setIsRevealed(true);
+					board[x2][y2].setHasMoved(true);
 					board[x1][y1] = null;
 					return true;
 				}
@@ -125,6 +130,7 @@ public class Board {
 					returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
 					board[x2][y2] = board[x1][y1];
 					board[x2][y2].setIsRevealed(true);
+					board[x2][y2].setHasMoved(true);
 					board[x1][y1] = null;
 					return true;
 				}

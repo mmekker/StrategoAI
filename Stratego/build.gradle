@@ -6,6 +6,8 @@ buildscript {
         jcenter()
     }
     dependencies {
+        provided 'org.deeplearning4j:deeplearning4j-core:0.7.2'
+        provided 'org.nd4j:nd4j-native:0.7.2'
     }
 }
 
@@ -39,8 +41,8 @@ project(":desktop") {
         compile project(":core")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        compile 'org.deeplearning4j:deeplearning4j-core:0.7.2'
-        compile 'org.nd4j:nd4j-native:0.7.2'
+        provided 'org.deeplearning4j:deeplearning4j-core:0.7.2'
+        provided 'org.nd4j:nd4j-native:0.7.2'
     }
 }
 

@@ -3,11 +3,13 @@ package com.game.stratego;
 public class Piece {
 	private char rank;
 	private boolean isRevealed;
+	private boolean hasMoved;
 	private int teamNumber;
 	
 	public Piece(char rank, int teamNumber) {
 		this.rank = rank;
 		isRevealed = false;
+		hasMoved = false;
 		this.teamNumber = teamNumber;
 	}
 
@@ -27,6 +29,14 @@ public class Piece {
 		this.isRevealed = isRevealed;
 	}
 
+	public boolean hasMoved() {
+		return hasMoved;
+	}
+
+	public void setHasMoved(boolean hasMoved) {
+		this.hasMoved = hasMoved;
+	}
+
 	public int getTeamNumber() {
 		return teamNumber;
 	}
@@ -34,5 +44,6 @@ public class Piece {
 	public void setTeamNumber(int teamNumber) {
 		this.teamNumber = teamNumber;
 	}
+
 
 }
