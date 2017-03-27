@@ -2,7 +2,6 @@ package com.game.stratego.core;
 
 import com.badlogic.gdx.Game;
 import com.game.stratego.core.screens.MainMenu;
-//import org.deeplearning4j.*;
 
 public class Stratego extends Game {
 	@Override

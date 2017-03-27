@@ -85,29 +85,25 @@
 			</dependency>
 
 			<!-- Deep Learning dependencies -->
-			<dependency>
-		    	<groupId>org.deeplearning4j</groupId>
-		    	<artifactId>deeplearning4j-ui</artifactId>
-		    	<version>${dl4j.version}</version>
-		    </dependency>
-
-		    <dependency>
-		    	<groupId>org.deeplearning4j</groupId>
-		    	<artifactId>deeplearning4j-nlp</artifactId>
-		    	<version>${dl4j.version}</version>
-		    </dependency>
-
 		    <dependency>
 		    	<groupId>org.deeplearning4j</groupId>
 		    	<artifactId>deeplearning4j-core</artifactId>
 		    	<version>${dl4j.version}</version>
 		    </dependency>
 
-		    <dependency>
-		    	<groupId>org.nd4j</groupId>
-		    	<artifactId>nd4j-x86</artifactId>
-		    	<version>${nd4j.version}</version>
-		    </dependency>
+
+			<dependency>
+				<groupId>org.nd4j</groupId>
+				<artifactId>nd4j-native-platform</artifactId>
+				<version>${nd4j.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>1.6.2</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

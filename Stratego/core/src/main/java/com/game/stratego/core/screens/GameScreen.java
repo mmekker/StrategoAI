@@ -7,23 +7,24 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-//import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.game.stratego.core.Stratego;
 import com.game.stratego.core.stratego.Board;
 import com.game.stratego.core.stratego.Match;
-import com.game.stratego.core.Stratego;
 import com.game.stratego.core.stratego.TrayPiece;
 
 import java.awt.*;
+
+//import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
 public class GameScreen implements Screen, InputProcessor {
 	Stratego game;
 	ShapeRenderer sr;
 	BitmapFont font;
 	SpriteBatch batch;
-	
+
 	private Match match;
 	private Point selected;
 	private String message;		//TODO: Add who took who into the messages
@@ -85,10 +86,8 @@ public class GameScreen implements Screen, InputProcessor {
 		sr.end();
 		
 		batch.begin();
-		/*GlyphLayout layout = new GlyphLayout(); //dont do this every frame! Store it as member
-		layout.setText(font, message);
 		font.setColor(Color.BLACK);
-		font.draw(batch, message, ((Gdx.graphics.getWidth()/2)-(layout.width/2)), 37);*/
+		font.draw(batch, message, ((Gdx.graphics.getWidth()/2)-(250)), 37);
 
 		//Write Board text
 		writeBoardText();
@@ -168,12 +167,13 @@ public class GameScreen implements Screen, InputProcessor {
 				if(match.getBoard()[x][y] != null) {
 					if(match.getBoard()[x][y].getTeamNumber() == 0) {
 						if(match.getBoard()[x][y].isRevealed()) {
-							//font.setColor(Color.LIME);
+							font.setColor(Color.GREEN);
 						}else font.setColor(Color.WHITE);
 						font.draw(batch, Character.toString(match.getBoard()[x][y].getRank()), ((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x)+20, ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1))+30);
 					}
 					else if(match.getBoard()[x][y].getTeamNumber() == 1) {
-						if(match.getBoard()[x][y].isRevealed()) {
+						if(match.getBoard()[x][y].isRevealed()
+								|| !match.getBoard()[x][y].isRevealed()) {
 							font.setColor(Color.WHITE);
 							font.draw(batch, Character.toString(match.getBoard()[x][y].getRank()), ((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x)+20, ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1))+30);
 						}
