@@ -31,7 +31,8 @@ public class Match {
 		}
 		else if(state.equals("play")) {
 			if(currentTurn == 1) { //Computer turn
-				Move m = computerPlayer.getMove(this.getBoard().clone());
+				Piece[][] temp = Board.cloneBoard(this.getBoard());
+				Move m = computerPlayer.getMove(temp);
 				int x1 = m.source.x;
 				int y1 = m.source.y;
 				int x2 = m.destination.x;

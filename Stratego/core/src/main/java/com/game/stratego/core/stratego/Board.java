@@ -43,6 +43,18 @@ public class Board {
 		gameFinished = false;
 		winner = -1;
 	}
+
+	public static Piece[][] cloneBoard(Piece[][] b) {
+		Piece[][] newB = new Piece[b.length][b.length];
+		for(int x = 0; x < b.length; x++) {
+			for(int y = 0; y < b.length; y++) {
+				if(b[x][y] != null) {
+					newB[x][y] = new Piece(b[x][y].getRank(), b[x][y].getTeamNumber());
+				}
+			}
+		}
+		return newB;
+	}
 	
 	public boolean movePiece(int x1, int y1, int x2, int y2) {
 		if(x1 >= DEFAULT_BOARD_SIZE || y1 >= DEFAULT_BOARD_SIZE
@@ -115,6 +127,13 @@ public class Board {
 					board[x2][y2].setIsRevealed(true);
 					board[x2][y2].setHasMoved(true);
 					board[x1][y1] = null;
+					return true;
+				}
+				else if(board[x2][y2].getRank() == 'S') { //if the spy is attacking another spy
+					returnToTray(board[x1][y1].getRank(), board[x1][y1].getTeamNumber());
+					returnToTray(board[x2][y2].getRank(), board[x2][y2].getTeamNumber());
+					board[x1][y1] = null;
+					board[x2][y2] = null;
 					return true;
 				}
 				else {
@@ -208,7 +227,7 @@ public class Board {
 	}
 
 	public void returnToTray(char rank, int teamNumber) {
-		System.out.println("Rank: " + rank + ", TeamNumber: " + teamNumber);
+		//System.out.println("Rank: " + rank + ", TeamNumber: " + teamNumber);
 		for(int x = 0; x < NUMBER_OF_PIECES; x++) {
 			if(teamNumber == 0) {
 				if(playerTray[x].getRank() == rank) {

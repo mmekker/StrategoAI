@@ -3,8 +3,6 @@ package com.game.stratego.core.ai;
 import com.game.stratego.core.stratego.Board;
 import com.game.stratego.core.stratego.Move;
 import com.game.stratego.core.stratego.Piece;
-import org.deeplearning4j.datasets.fetchers.BaseDataFetcher;
-import org.deeplearning4j.datasets.iterator.BaseDatasetIterator;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -24,31 +22,14 @@ public class AI {
 
     public AI(Piece[][] board) {
         this.board = board;
-        this.network = BoardClassifier.getModel();
+        //this.network = BoardClassifier.getModel();
     }
 
     public Move getMove(Piece[][] nBoard) {
         this.board = nBoard;
-        INDArray input = getINDArray(board);
-        //System.out.println("INDArray input: \n\n" + input.toString());
-        float[] f = {1,2};
-        INDArray labels = Nd4j.create(f, new int[]{1,2});
-        d = new DataSet(input,labels);
-        d.normalize();
-        ArrayList<DataSet> l = new ArrayList<DataSet>();
-        l.add(d);
-        BaseDataFetcher fetcher = new BaseDataFetcher() {
-            @Override
-            public void fetch(int i) {
-                this.curr = d;
-            }
-        };
-        //TODO: Make a new data fetcher
-            //Override the fetch method
-            //Constructor will take in one dataset
-        BaseDatasetIterator iter = new BaseDatasetIterator(1,1,fetcher);
-        INDArray output = network.output(iter);
-        System.out.println("INDArray output: " + output.toString());
+
+        System.out.println("Finding all possible moves.");
+        //Find all possible moves
         ArrayList<Move> possibleMoves = new ArrayList<Move>();
         for(int x1 = 0; x1 < Board.DEFAULT_BOARD_SIZE; x1++) {
             for(int y1 = 0; y1 < Board.DEFAULT_BOARD_SIZE; y1++) {
@@ -63,10 +44,80 @@ public class AI {
                 }
             }
         }
-        if(!possibleMoves.isEmpty()) {
-            return possibleMoves.get(0);
+
+        System.out.println("Finding all possible boards.");
+        //Use list of possible moves to make list of possible boards
+        ArrayList<Piece[][]> possibleBoards = new ArrayList<Piece[][]>();
+        Board temp = new Board();
+        temp.setBoard(Board.cloneBoard(this.board));
+        for(Move m : possibleMoves) {
+            temp.movePiece(m.source.x, m.source.y, m.destination.x, m.destination.y);
+            possibleBoards.add(temp.getBoard());
+            temp = new Board();
+            temp.setBoard(Board.cloneBoard(this.board));
         }
-        return new Move(new Point(), new Point());
+
+        System.out.println("Finding the board with the lowest score.");
+        //Find the board with the lowest score
+        if(!possibleBoards.isEmpty()) {
+            int highestScoreIndex = -1;
+            float highscore = 0;
+            for(int x = 0; x < possibleBoards.size(); x++) {
+                if(x != -1) {
+                    float score = getScore(possibleBoards.get(x));
+                    if(score >highscore) {
+                        highestScoreIndex = x;
+                        highscore = score;
+                    }
+                }
+                else {
+                    highestScoreIndex = x;
+                }
+            }
+            System.out.println("Board: \n" + boardString(possibleBoards.get(highestScoreIndex)));
+            System.out.println("Score: " + highscore);
+            return possibleMoves.get(highestScoreIndex);
+        }
+        return null;
+    }
+
+    public String boardString(Piece[][] b) {
+        String str = "";
+        for(int y = b.length-1; y >= 0; y--) {
+            for(int x = 0; x < b.length; x++) {
+                if(b[x][y] != null)
+                    str += (b[x][y].getRank() + "|");
+                else
+                    str += "_|";
+            }
+            str += "\n";
+        }
+        return str;
+    }
+
+    public float getScore(Piece[][] board) {
+        /*INDArray input = getINDArray(board);
+        //System.out.println("INDArray input: \n\n" + input.toString());
+        float[] f = {1,2};
+        INDArray labels = Nd4j.create(f, new int[]{1,2});
+        d = new DataSet(input,labels);
+        d.normalize();
+        ArrayList<DataSet> l = new ArrayList<DataSet>();
+        l.add(d);
+        BaseDataFetcher fetcher = new BaseDataFetcher() {
+            @Override
+            public void fetch(int i) {
+                this.curr = d;
+            }
+        };
+        //TODO: Make a new data fetcher
+        //Override the fetch method
+        //Constructor will take in one dataset
+        BaseDatasetIterator iter = new BaseDatasetIterator(1,1,fetcher);
+        INDArray output = network.output(iter);
+        System.out.println("INDArray output: " + output.toString());*/
+
+        return 1;
     }
 
     public boolean checkMove(Point p1, Point p2) {
