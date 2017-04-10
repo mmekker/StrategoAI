@@ -1,0 +1,13 @@
+Tasks for user to complete:
+- start playing the game
+- finish a game against the ai
+
+Things to measure:
+- time the task takes
+- perceived difficulty of the ai
+- overall rating of experience
+
+Variable to change:
+- accessibility options
+	- old vs new ui
+- difficulty of ai

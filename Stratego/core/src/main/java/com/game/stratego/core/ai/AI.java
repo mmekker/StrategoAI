@@ -3,13 +3,16 @@ package com.game.stratego.core.ai;
 import com.game.stratego.core.stratego.Board;
 import com.game.stratego.core.stratego.Move;
 import com.game.stratego.core.stratego.Piece;
+import org.deeplearning4j.datasets.iterator.BaseDatasetIterator;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by user on 3/18/2017.
@@ -22,7 +25,7 @@ public class AI {
 
     public AI(Piece[][] board) {
         this.board = board;
-        //this.network = BoardClassifier.getModel();
+        this.network = BoardClassifier.getModel();
     }
 
     public Move getMove(Piece[][] nBoard) {
@@ -57,8 +60,8 @@ public class AI {
             temp.setBoard(Board.cloneBoard(this.board));
         }
 
-        System.out.println("Finding the board with the lowest score.");
-        //Find the board with the lowest score
+        System.out.println("Finding the board with the highest score.");
+        //Find the board with the highest score
         if(!possibleBoards.isEmpty()) {
             int highestScoreIndex = -1;
             float highscore = 0;
@@ -74,8 +77,10 @@ public class AI {
                     highestScoreIndex = x;
                 }
             }
-            System.out.println("Board: \n" + boardString(possibleBoards.get(highestScoreIndex)));
-            System.out.println("Score: " + highscore);
+            System.out.println("Current board state: \n" + boardString(this.board));
+            System.out.println("Desired board state: \n" + boardString(possibleBoards.get(highestScoreIndex)));
+            System.out.println("Desired move: " + possibleMoves.get(highestScoreIndex));
+            System.out.println("Desired board's score: " + highscore);
             return possibleMoves.get(highestScoreIndex);
         }
         return null;
@@ -96,28 +101,14 @@ public class AI {
     }
 
     public float getScore(Piece[][] board) {
-        /*INDArray input = getINDArray(board);
-        //System.out.println("INDArray input: \n\n" + input.toString());
-        float[] f = {1,2};
-        INDArray labels = Nd4j.create(f, new int[]{1,2});
-        d = new DataSet(input,labels);
-        d.normalize();
-        ArrayList<DataSet> l = new ArrayList<DataSet>();
-        l.add(d);
-        BaseDataFetcher fetcher = new BaseDataFetcher() {
-            @Override
-            public void fetch(int i) {
-                this.curr = d;
-            }
-        };
-        //TODO: Make a new data fetcher
-        //Override the fetch method
-        //Constructor will take in one dataset
-        BaseDatasetIterator iter = new BaseDatasetIterator(1,1,fetcher);
-        INDArray output = network.output(iter);
-        System.out.println("INDArray output: " + output.toString());*/
-
-        return 1;
+        //Get the input
+        INDArray input = getINDArray(board);
+        //Reformat input
+        input = Nd4j.toFlattened(input);
+        input = Nd4j.vstack(input);
+        //get output
+        INDArray output = network.output(input,false);
+        return output.getFloat(0);
     }
 
     public boolean checkMove(Point p1, Point p2) {

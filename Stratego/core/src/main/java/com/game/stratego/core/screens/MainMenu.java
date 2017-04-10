@@ -21,6 +21,7 @@ public class MainMenu implements Screen, InputProcessor {
 	Texture rules;
 	Texture help;
 	Texture settings;
+	Texture background;
 	
 	boolean optionHover;
 	int selectedOption;
@@ -39,6 +40,7 @@ public class MainMenu implements Screen, InputProcessor {
 		rules  = new Texture("rules.png");
 		help  = new Texture("help.png");
 		settings  = new Texture("settings.png");
+		background  = new Texture("background.png");
 		batch = new SpriteBatch();
 		sr = new ShapeRenderer();
 		optionHover = false;
@@ -55,6 +57,17 @@ public class MainMenu implements Screen, InputProcessor {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		batch.begin();
+		//Write options
+		batch.draw(background, 0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+		/*batch.draw(start, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0), OPTION_WIDTH, OPTION_HEIGHT);
+		batch.draw(load, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1), OPTION_WIDTH, OPTION_HEIGHT);
+		batch.draw(rules, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH-50)/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2), OPTION_WIDTH-50, OPTION_HEIGHT);
+		batch.draw(help, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH-50)/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3), OPTION_WIDTH-50, OPTION_HEIGHT);
+		batch.draw(settings, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4), OPTION_WIDTH, OPTION_HEIGHT);
+		*/
+		batch.end();
 		sr.begin(ShapeType.Filled);
 		//Draw Rectangles for options
 		sr.setColor(optionColor);
@@ -62,16 +75,6 @@ public class MainMenu implements Screen, InputProcessor {
 			sr.circle((Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2)-50, ((Gdx.graphics.getHeight()/2)+10)-(OPTION_HEIGHT*selectedOption)-(OPTION_OFFSET*selectedOption), 5);
 		}
 		sr.end();
-		batch.begin();
-		//Write options
-		batch.draw(start, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0), OPTION_WIDTH, OPTION_HEIGHT);
-		batch.draw(load, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1), OPTION_WIDTH, OPTION_HEIGHT);
-		batch.draw(rules, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH-50)/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2), OPTION_WIDTH-50, OPTION_HEIGHT);
-		batch.draw(help, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH-50)/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3), OPTION_WIDTH-50, OPTION_HEIGHT);
-		batch.draw(settings, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4), OPTION_WIDTH, OPTION_HEIGHT);
-		//Draw logo
-		batch.draw(logo, (Gdx.graphics.getWidth()/2)-(723/2), (Gdx.graphics.getHeight()/2), 723, 237);
-		batch.end();
 	}
 	
 	@Override

@@ -64,7 +64,7 @@ public class BoardClassifier {
                 .layer(4, layer4)
                 .pretrain(false)
                 .backprop(true)
-                .setInputType(InputType.convolutional(6,10,10))
+                .setInputType(InputType.convolutionalFlat(10,10,6))
                 .build();
 
         MultiLayerNetwork network = new MultiLayerNetwork(configuration);
