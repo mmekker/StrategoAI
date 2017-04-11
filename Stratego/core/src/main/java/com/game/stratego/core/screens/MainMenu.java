@@ -15,7 +15,6 @@ public class MainMenu implements Screen, InputProcessor {
 	private Stratego game;
 	SpriteBatch batch;
 	ShapeRenderer sr;
-	Texture logo;
 	Texture start;
 	Texture load;
 	Texture rules;
@@ -34,18 +33,17 @@ public class MainMenu implements Screen, InputProcessor {
 	public MainMenu(Stratego game) {
 		Gdx.input.setInputProcessor(this);
 		this.game = game;
-		logo  = new Texture("logo.png");
-		start  = new Texture("start.png");
-		load  = new Texture("load.png");
-		rules  = new Texture("rules.png");
-		help  = new Texture("help.png");
-		settings  = new Texture("settings.png");
-		background  = new Texture("background.png");
+		start  = new Texture("menu/MenuStartGameBlack.png");
+		load  = new Texture("menu/MenuLoadGameBlack.png");
+		rules  = new Texture("menu/MenuRulesBlack.png");
+		help  = new Texture("menu/MenuHelpBlack.png");
+		settings  = new Texture("menu/MenuSettingsBlack.png");
+		background  = new Texture("menu/StartingScreen.png");
 		batch = new SpriteBatch();
 		sr = new ShapeRenderer();
 		optionHover = false;
-		selectedOption = 0;
-		optionColor = Color.WHITE;
+		selectedOption = -1;
+		optionColor = Color.RED;
 	}
 	
 	@Override
@@ -57,22 +55,33 @@ public class MainMenu implements Screen, InputProcessor {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		checkSelectedOption();
 
 		batch.begin();
 		//Write options
 		batch.draw(background, 0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-		/*batch.draw(start, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0), OPTION_WIDTH, OPTION_HEIGHT);
-		batch.draw(load, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1), OPTION_WIDTH, OPTION_HEIGHT);
-		batch.draw(rules, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH-50)/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2), OPTION_WIDTH-50, OPTION_HEIGHT);
-		batch.draw(help, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH-50)/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3), OPTION_WIDTH-50, OPTION_HEIGHT);
-		batch.draw(settings, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4), OPTION_WIDTH, OPTION_HEIGHT);
-		*/
+		batch.draw(start, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0), OPTION_WIDTH, OPTION_HEIGHT);
+		batch.draw(load, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1), OPTION_WIDTH, OPTION_HEIGHT);
+		batch.draw(rules, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH)/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2), OPTION_WIDTH, OPTION_HEIGHT);
+		batch.draw(help, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH)/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3), OPTION_WIDTH, OPTION_HEIGHT);
+		batch.draw(settings, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4), OPTION_WIDTH, OPTION_HEIGHT);
+
 		batch.end();
 		sr.begin(ShapeType.Filled);
 		//Draw Rectangles for options
 		sr.setColor(optionColor);
 		if(optionHover) {
-			sr.circle((Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2)-50, ((Gdx.graphics.getHeight()/2)+10)-(OPTION_HEIGHT*selectedOption)-(OPTION_OFFSET*selectedOption), 5);
+			int x1 = (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2)-20;
+			int y1 = ((Gdx.graphics.getHeight()/2)-15)-(OPTION_HEIGHT*selectedOption)-(OPTION_OFFSET*selectedOption)-5;
+
+			int x2 = (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2)-20;
+			int y2 = ((Gdx.graphics.getHeight()/2)-15)-(OPTION_HEIGHT*selectedOption)-(OPTION_OFFSET*selectedOption)+5;
+
+			int x3 = (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2)-10;
+			int y3 = ((Gdx.graphics.getHeight()/2)-15)-(OPTION_HEIGHT*selectedOption)-(OPTION_OFFSET*selectedOption);
+
+			sr.triangle(x1,y1,x2,y2,x3,y3);
+			sr.circle((Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2)-20, ((Gdx.graphics.getHeight()/2)-15)-(OPTION_HEIGHT*selectedOption)-(OPTION_OFFSET*selectedOption), 5);
 		}
 		sr.end();
 	}
@@ -103,41 +112,94 @@ public class MainMenu implements Screen, InputProcessor {
 		sr.dispose();
 	}
 
+	public void checkSelectedOption() {
+		switch(selectedOption) {
+			case -1: //None
+				start  = new Texture("menu/MenuStartGameBlack.png");
+				load  = new Texture("menu/MenuLoadGameBlack.png");
+				rules  = new Texture("menu/MenuRulesBlack.png");
+				help  = new Texture("menu/MenuHelpBlack.png");
+				settings  = new Texture("menu/MenuSettingsBlack.png");
+				break;
+			case 0: //Start
+				start  = new Texture("menu/MenuStartGameRed.png");
+				load  = new Texture("menu/MenuLoadGameBlack.png");
+				rules  = new Texture("menu/MenuRulesBlack.png");
+				help  = new Texture("menu/MenuHelpBlack.png");
+				settings  = new Texture("menu/MenuSettingsBlack.png");
+				break;
+			case 1: //Load
+				start  = new Texture("menu/MenuStartGameBlack.png");
+				load  = new Texture("menu/MenuLoadGameRed.png");
+				rules  = new Texture("menu/MenuRulesBlack.png");
+				help  = new Texture("menu/MenuHelpBlack.png");
+				settings  = new Texture("menu/MenuSettingsBlack.png");
+				break;
+			case 2: //Rules
+				start  = new Texture("menu/MenuStartGameBlack.png");
+				load  = new Texture("menu/MenuLoadGameBlack.png");
+				rules  = new Texture("menu/MenuRulesRed.png");
+				help  = new Texture("menu/MenuHelpBlack.png");
+				settings  = new Texture("menu/MenuSettingsBlack.png");
+				break;
+			case 3: //Help
+				start  = new Texture("menu/MenuStartGameBlack.png");
+				load  = new Texture("menu/MenuLoadGameBlack.png");
+				rules  = new Texture("menu/MenuRulesBlack.png");
+				help  = new Texture("menu/MenuHelpRed.png");
+				settings  = new Texture("menu/MenuSettingsBlack.png");
+				break;
+			case 4: //Settings
+				start  = new Texture("menu/MenuStartGameBlack.png");
+				load  = new Texture("menu/MenuLoadGameBlack.png");
+				rules  = new Texture("menu/MenuRulesBlack.png");
+				help  = new Texture("menu/MenuHelpBlack.png");
+				settings  = new Texture("menu/MenuSettingsRed.png");
+				break;
+			default: //None
+				start  = new Texture("menu/MenuStartGameBlack.png");
+				load  = new Texture("menu/MenuLoadGameBlack.png");
+				rules  = new Texture("menu/MenuRulesBlack.png");
+				help  = new Texture("menu/MenuHelpBlack.png");
+				settings  = new Texture("menu/MenuSettingsBlack.png");
+				break;
+		}
+	}
 	
 	//Input
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		optionColor = Color.GREEN;
+		optionColor = Color.BLACK;
 		return true;
 	}
 	
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		optionColor = Color.WHITE;
+		optionColor = Color.RED;
 		int newScreenY = (Gdx.graphics.getHeight()) - screenY;
-		if(screenX > 118 && screenX < 842) {
-			if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0) + OPTION_HEIGHT) {
+		if(screenX > 330 && screenX < 630) {
+			if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0) + OPTION_HEIGHT) {
 				//Option 0 selected
 				game.setScreen(new GameScreen(game));
 			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1) + OPTION_HEIGHT) {
+			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1) + OPTION_HEIGHT) {
 				//Option 1 selected
 				
 			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2) + OPTION_HEIGHT) {
+			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2) + OPTION_HEIGHT) {
 				//Option 2 selected
 				
 			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3) + OPTION_HEIGHT) {
+			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3) + OPTION_HEIGHT) {
 				//Option 3 selected
 				
 			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4) + OPTION_HEIGHT) {
+			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4) + OPTION_HEIGHT) {
 				//Option 4 selected
 				
 			}
@@ -148,37 +210,39 @@ public class MainMenu implements Screen, InputProcessor {
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
 		int newScreenY = (Gdx.graphics.getHeight()) - screenY;
-		if(screenX > 200 && screenX < 800) {
-			if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0) + OPTION_HEIGHT) {
+		if(screenX > 330 && screenX < 630) {
+			if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0) + OPTION_HEIGHT) {
 				selectedOption = 0;
 				optionHover = true;
 			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1) + OPTION_HEIGHT) {
+			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1) + OPTION_HEIGHT) {
 				selectedOption = 1;
 				optionHover = true;
 			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2) + OPTION_HEIGHT) {
+			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2) + OPTION_HEIGHT) {
 				selectedOption = 2;
 				optionHover = true;
 			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3) + OPTION_HEIGHT) {
+			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3) + OPTION_HEIGHT) {
 				selectedOption = 3;
 				optionHover = true;
 			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4) 
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-20)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4) + OPTION_HEIGHT) {
+			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4)
+					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4) + OPTION_HEIGHT) {
 				selectedOption = 4;
 				optionHover = true;
 			}
 			else {
+				selectedOption = -1;
 				optionHover = false;
 			}
 		}
 		else {
+			selectedOption = -1;
 			optionHover = false;
 		}
 		return true;

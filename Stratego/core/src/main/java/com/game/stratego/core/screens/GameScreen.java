@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -24,6 +25,35 @@ public class GameScreen implements Screen, InputProcessor {
 	ShapeRenderer sr;
 	BitmapFont font;
 	SpriteBatch batch;
+
+	//Load All textures
+	Texture background = new Texture("GameScreenWithGrid.png");
+	Texture blueBack = new Texture("piece/BluePieceBack.png");
+	Texture blue1 = new Texture("piece/BluePieceFront1.png");
+	Texture blue2 = new Texture("piece/BluePieceFront2.png");
+	Texture blue3 = new Texture("piece/BluePieceFront3.png");
+	Texture blue4 = new Texture("piece/BluePieceFront4.png");
+	Texture blue5 = new Texture("piece/BluePieceFront5.png");
+	Texture blue6 = new Texture("piece/BluePieceFront6.png");
+	Texture blue7 = new Texture("piece/BluePieceFront7.png");
+	Texture blue8 = new Texture("piece/BluePieceFront8.png");
+	Texture blue9 = new Texture("piece/BluePieceFront9.png");
+	Texture blueB = new Texture("piece/BluePieceFrontB.png");
+	Texture blueF = new Texture("piece/BluePieceFrontF.png");
+	Texture blueS = new Texture("piece/BluePieceFrontS.png");
+	Texture redBack = new Texture("piece/RedPieceBack.png");
+	Texture red1 = new Texture("piece/RedPieceFront1.png");
+	Texture red2 = new Texture("piece/RedPieceFront2.png");
+	Texture red3 = new Texture("piece/RedPieceFront3.png");
+	Texture red4 = new Texture("piece/RedPieceFront4.png");
+	Texture red5 = new Texture("piece/RedPieceFront5.png");
+	Texture red6 = new Texture("piece/RedPieceFront6.png");
+	Texture red7 = new Texture("piece/RedPieceFront7.png");
+	Texture red8 = new Texture("piece/RedPieceFront8.png");
+	Texture red9 = new Texture("piece/RedPieceFront9.png");
+	Texture redB = new Texture("piece/RedPieceFrontB.png");
+	Texture redF = new Texture("piece/RedPieceFrontF.png");
+	Texture redS = new Texture("piece/RedPieceFrontS.png");
 
 	private Match match;
 	private Point selected;
@@ -49,7 +79,6 @@ public class GameScreen implements Screen, InputProcessor {
 				&& match.getState().equals("make")) {
 			match.getGameBoard().createPlayerSetup();
 		}
-		match.update();
 
 		if(match.getGameBoard().isGameFinished()) {
 			if(match.getGameBoard().getWinner() == 0) {
@@ -57,7 +86,10 @@ public class GameScreen implements Screen, InputProcessor {
 			}
 			else setMessage("Oh no. You lost.");
 		}
-		
+		batch.begin();
+		batch.draw(background,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+		batch.end();
+
 		sr.begin(ShapeType.Filled);
 
 		//Draw top left menu button
@@ -73,7 +105,6 @@ public class GameScreen implements Screen, InputProcessor {
 		else sr.setColor(Color.RED);
 		sr.rect((Gdx.graphics.getWidth()/2)-20, (Gdx.graphics.getHeight()-50), 40, 40);*/
 
-		//Draw board
 		drawBoardShapes();
 
 		//Draw trays
@@ -84,99 +115,135 @@ public class GameScreen implements Screen, InputProcessor {
 		sr.rect((Gdx.graphics.getWidth()/2)-250, 15, 501, 30);
 		
 		sr.end();
-		
+
 		batch.begin();
+		drawTrayTextures();
 		font.setColor(Color.BLACK);
 		font.draw(batch, message, ((Gdx.graphics.getWidth()/2)-(250)), 37);
 
 		//Write Board text
-		writeBoardText();
+		drawBoardTextures();
 
 		//Write Tray text
 		writeTrayText();
 		
 		batch.end();
+		match.update();
 	}
 
 	/************Start Draw Methods***************/
 	public void drawBoardShapes() {
-		sr.setColor(Color.WHITE);
-		sr.rect((Gdx.graphics.getWidth() / 2) - 250, (Gdx.graphics.getHeight() / 2) - 250, 501, 502);
-		sr.setColor(Color.BLACK);
 		for (int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
 			for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-				//Water
-				if ((x == 2 && y == 4)
-						|| (x == 2 && y == 5)
-						|| (x == 3 && y == 4)
-						|| (x == 3 && y == 5)
-						|| (x == 6 && y == 4)
-						|| (x == 6 && y == 5)
-						|| (x == 7 && y == 4)
-						|| (x == 7 && y == 5)) {
-					sr.setColor(Color.CYAN);
-				} else if (match.getBoard()[x][y] == null) {
-					sr.setColor(Color.BLACK);
-				} else if (match.getBoard()[x][y].getTeamNumber() == 0) {
-					sr.setColor(Color.BLUE);
-				} else if (match.getBoard()[x][y].getTeamNumber() == 1) {
-					sr.setColor(Color.RED);
-				} else {
-					sr.setColor(Color.BLACK);
-				}
-				sr.rect(((Gdx.graphics.getWidth() / 2) - 250) + (x + 1) + (49 * x), ((Gdx.graphics.getHeight() / 2) - 200) + (y + 1) + (49 * (y - 1)), 49, 49);
 				if (match.getState().equals("play") && selected != null
 						&& selected.x == x && selected.y == y) {
 					sr.setColor(Color.YELLOW);
-					sr.rect(((Gdx.graphics.getWidth() / 2) - 250) + (x + 1) + (49 * x) + 15, ((Gdx.graphics.getHeight() / 2) - 200) + (y + 1) + (49 * (y - 1)) + 15, 20, 20);
+					sr.rect(((Gdx.graphics.getWidth() / 2) - 250) + (x + 1) + (49 * x), ((Gdx.graphics.getHeight() / 2) - 200) + (y + 1) + (49 * (y - 1)), 50, 50);
 				}
 			}
 		}
 	}
 
 	public void drawTrayShapes() {
-		//Player tray
-		sr.setColor(Color.WHITE);
-		sr.rect(20, 75, 165, 488);
-		sr.setColor(Color.BLUE);
 		for(int x = 0; x < 2; x++) {
-			for(int y = 0; y < 6; y++) {
-				sr.setColor(Color.BLUE);
-				sr.rect((21)+(x+1)+(80*x), (75)+(y+1)+(80*y), 80, 80);
+			for (int y = 0; y < 6; y++) {
 				if (match.getState().equals("make") && selected != null
 						&& selected.x == x && selected.y == y) {
 					sr.setColor(Color.YELLOW);
-					sr.rect((21)+(x+1)+(80*x)+30, (75)+(y+1)+(80*y)+30, 20, 20);
+					sr.rect((23)+(x+1)+(75*x), (80)+(y+1)+(75*y), 75, 75);
 				}
-			}
-		}
-		//Computer Tray
-		sr.setColor(Color.WHITE);
-		sr.rect(775, 75, 165, 488);
-		sr.setColor(Color.RED);
-		for(int x = 0; x < 2; x++) {
-			for(int y = 0; y < 6; y++) {
-				sr.rect((776)+(x+1)+(80*x), (75)+(y+1)+(80*y), 80, 80);
 			}
 		}
 	}
 
-	public void writeBoardText() {
+	public void drawTrayTextures() {
+		//Player tray
+		TrayPiece[] playerTray = match.getGameBoard().getPlayerTray();
+		TrayPiece[] computerTray = match.getGameBoard().getComputerTray();
+		for(int x = 0; x < 2; x++) {
+			for(int y = 0; y < 6; y++) {
+				//Get Piece index
+				int i = (y+x)+(5*x);
+				Texture current = getPieceTexture(playerTray[i].getRank(), 0);
+				batch.draw(current,(23)+(x+1)+(75*x), (80)+(y+1)+(75*y), 75, 75);
+			}
+		}
+		//Computer Tray
+		for(int x = 0; x < 2; x++) {
+			for(int y = 0; y < 6; y++) {
+				//Get Piece index
+				int i = (y+x)+(5*x);
+				Texture current = getPieceTexture(computerTray[i].getRank(), 1);
+				batch.draw(current,(785)+(x+1)+(75*x), (80)+(y+1)+(75*y), 75, 75);
+			}
+		}
+	}
+
+	public Texture getPieceTexture(char rank, int teamNum) {
+		switch(rank) {
+			case '1':
+				if(teamNum == 0) return blue1;
+				else return red1;
+			case '2':
+				if(teamNum == 0) return blue2;
+				else return red2;
+			case '3':
+				if(teamNum == 0) return blue3;
+				else return red3;
+			case '4':
+				if(teamNum == 0) return blue4;
+				else return red4;
+			case '5':
+				if(teamNum == 0) return blue5;
+				else return red5;
+			case '6':
+				if(teamNum == 0) return blue6;
+				else return red6;
+			case '7':
+				if(teamNum == 0) return blue7;
+				else return red7;
+			case '8':
+				if(teamNum == 0) return blue8;
+				else return red8;
+			case '9':
+				if(teamNum == 0) return blue9;
+				else return red9;
+			case 'B':
+				if(teamNum == 0) return blueB;
+				else return redB;
+			case 'F':
+				if(teamNum == 0) return blueF;
+				else return redF;
+			case 'S':
+				if(teamNum == 0) return blueS;
+				else return redS;
+			default:
+				if(teamNum == 0) return blueBack;
+				else return redBack;
+		}
+	}
+
+	public void drawBoardTextures() {
 		for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
 			for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
 				if(match.getBoard()[x][y] != null) {
+					Texture current;
 					if(match.getBoard()[x][y].getTeamNumber() == 0) {
-						if(match.getBoard()[x][y].isRevealed()) {
-							font.setColor(Color.GREEN);
-						}else font.setColor(Color.WHITE);
-						font.draw(batch, Character.toString(match.getBoard()[x][y].getRank()), ((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x)+20, ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1))+30);
+						current = getPieceTexture(match.getBoard()[x][y].getRank(), 0);
+						batch.draw(current,((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x),((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1)),50,50);
+						//font.draw(batch, Character.toString(match.getBoard()[x][y].getRank()), ((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x)+20, ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1))+30);
 					}
 					else if(match.getBoard()[x][y].getTeamNumber() == 1) {
-						if(match.getBoard()[x][y].isRevealed()
+						if(match.getBoard()[x][y].isRevealed()) {
+							current = getPieceTexture(match.getBoard()[x][y].getRank(), 1);
+						}else current = getPieceTexture(' ', 1);
+						batch.draw(current,((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x),((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1)),50,50);
+
+						/*if(match.getBoard()[x][y].isRevealed()
 								|| !match.getBoard()[x][y].isRevealed()) {
 							font.setColor(Color.WHITE);
 							font.draw(batch, Character.toString(match.getBoard()[x][y].getRank()), ((Gdx.graphics.getWidth()/2)-250)+(x+1)+(49*x)+20, ((Gdx.graphics.getHeight()/2)-200)+(y+1)+(49*(y-1))+30);
-						}
+						}*/
 					}
 				}
 			}
@@ -189,12 +256,9 @@ public class GameScreen implements Screen, InputProcessor {
 			for(int y = 0; y < 6; y++) {
 				//Get Piece index
 				int i = (y+x)+(5*x);
-				//Draw piece rank
-				font.setColor(Color.WHITE);
-				font.draw(batch, Character.toString(playerTray[i].getRank()), (21)+(x+1)+(80*x)+35,(75)+(y+1)+(80*y)+45);
 				//Draw piece remaining
 				font.setColor(Color.YELLOW);
-				font.draw(batch, Integer.toString(playerTray[i].getRemaining()), (21)+(x+1)+(80*x)+65,(75)+(y+1)+(80*y)+75);
+				font.draw(batch, Integer.toString(playerTray[i].getRemaining()), (23)+(x+1)+(75*x)+65,(80)+(y+1)+(75*y)+75);
 
 			}
 		}
@@ -203,12 +267,9 @@ public class GameScreen implements Screen, InputProcessor {
 			for(int y = 0; y < 6; y++) {
 				//Get Piece index
 				int i = (y+x)+(5*x);
-				//Draw piece rank
-				font.setColor(Color.WHITE);
-				font.draw(batch, Character.toString(computerTray[i].getRank()), (776)+(x+1)+(80*x)+35,(75)+(y+1)+(80*y)+45);
 				//Draw piece remaining
 				font.setColor(Color.YELLOW);
-				font.draw(batch, Integer.toString(computerTray[i].getRemaining()), (776)+(x+1)+(80*x)+65,(75)+(y+1)+(80*y)+75);
+				font.draw(batch, Integer.toString(computerTray[i].getRemaining()), (785)+(x+1)+(75*x)+65,(80)+(y+1)+(75*y)+75);
 			}
 		}
 	}
