@@ -16,7 +16,6 @@ public class MainMenu implements Screen, InputProcessor {
 	SpriteBatch batch;
 	ShapeRenderer sr;
 	Texture start;
-	Texture load;
 	Texture rules;
 	Texture help;
 	Texture settings;
@@ -28,13 +27,12 @@ public class MainMenu implements Screen, InputProcessor {
 	
 	private static int OPTION_HEIGHT = 46;
 	private static int OPTION_WIDTH = 200;
-	private static int OPTION_OFFSET = 2;
+	private static int OPTION_OFFSET = 7;
 	
 	public MainMenu(Stratego game) {
 		Gdx.input.setInputProcessor(this);
 		this.game = game;
 		start  = new Texture("menu/MenuStartGameBlack.png");
-		load  = new Texture("menu/MenuLoadGameBlack.png");
 		rules  = new Texture("menu/MenuRulesBlack.png");
 		help  = new Texture("menu/MenuHelpBlack.png");
 		settings  = new Texture("menu/MenuSettingsBlack.png");
@@ -61,10 +59,9 @@ public class MainMenu implements Screen, InputProcessor {
 		//Write options
 		batch.draw(background, 0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 		batch.draw(start, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*0)-(OPTION_OFFSET*0), OPTION_WIDTH, OPTION_HEIGHT);
-		batch.draw(load, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1), OPTION_WIDTH, OPTION_HEIGHT);
-		batch.draw(rules, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH)/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2), OPTION_WIDTH, OPTION_HEIGHT);
-		batch.draw(help, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH)/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3), OPTION_WIDTH, OPTION_HEIGHT);
-		batch.draw(settings, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4), OPTION_WIDTH, OPTION_HEIGHT);
+		batch.draw(rules, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH)/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*1)-(OPTION_OFFSET*1), OPTION_WIDTH, OPTION_HEIGHT);
+		batch.draw(help, (Gdx.graphics.getWidth()/2)-((OPTION_WIDTH)/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*2)-(OPTION_OFFSET*2), OPTION_WIDTH, OPTION_HEIGHT);
+		batch.draw(settings, (Gdx.graphics.getWidth()/2)-(OPTION_WIDTH/2), ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3), OPTION_WIDTH, OPTION_HEIGHT);
 
 		batch.end();
 		sr.begin(ShapeType.Filled);
@@ -116,49 +113,36 @@ public class MainMenu implements Screen, InputProcessor {
 		switch(selectedOption) {
 			case -1: //None
 				start  = new Texture("menu/MenuStartGameBlack.png");
-				load  = new Texture("menu/MenuLoadGameBlack.png");
 				rules  = new Texture("menu/MenuRulesBlack.png");
 				help  = new Texture("menu/MenuHelpBlack.png");
 				settings  = new Texture("menu/MenuSettingsBlack.png");
 				break;
 			case 0: //Start
 				start  = new Texture("menu/MenuStartGameRed.png");
-				load  = new Texture("menu/MenuLoadGameBlack.png");
 				rules  = new Texture("menu/MenuRulesBlack.png");
 				help  = new Texture("menu/MenuHelpBlack.png");
 				settings  = new Texture("menu/MenuSettingsBlack.png");
 				break;
-			case 1: //Load
+			case 1: //Rules
 				start  = new Texture("menu/MenuStartGameBlack.png");
-				load  = new Texture("menu/MenuLoadGameRed.png");
-				rules  = new Texture("menu/MenuRulesBlack.png");
-				help  = new Texture("menu/MenuHelpBlack.png");
-				settings  = new Texture("menu/MenuSettingsBlack.png");
-				break;
-			case 2: //Rules
-				start  = new Texture("menu/MenuStartGameBlack.png");
-				load  = new Texture("menu/MenuLoadGameBlack.png");
 				rules  = new Texture("menu/MenuRulesRed.png");
 				help  = new Texture("menu/MenuHelpBlack.png");
 				settings  = new Texture("menu/MenuSettingsBlack.png");
 				break;
-			case 3: //Help
+			case 2: //Help
 				start  = new Texture("menu/MenuStartGameBlack.png");
-				load  = new Texture("menu/MenuLoadGameBlack.png");
 				rules  = new Texture("menu/MenuRulesBlack.png");
 				help  = new Texture("menu/MenuHelpRed.png");
 				settings  = new Texture("menu/MenuSettingsBlack.png");
 				break;
-			case 4: //Settings
+			case 3: //Settings
 				start  = new Texture("menu/MenuStartGameBlack.png");
-				load  = new Texture("menu/MenuLoadGameBlack.png");
 				rules  = new Texture("menu/MenuRulesBlack.png");
 				help  = new Texture("menu/MenuHelpBlack.png");
 				settings  = new Texture("menu/MenuSettingsRed.png");
 				break;
 			default: //None
 				start  = new Texture("menu/MenuStartGameBlack.png");
-				load  = new Texture("menu/MenuLoadGameBlack.png");
 				rules  = new Texture("menu/MenuRulesBlack.png");
 				help  = new Texture("menu/MenuHelpBlack.png");
 				settings  = new Texture("menu/MenuSettingsBlack.png");
@@ -198,11 +182,6 @@ public class MainMenu implements Screen, InputProcessor {
 				//Option 3 selected
 				
 			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4)
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4) + OPTION_HEIGHT) {
-				//Option 4 selected
-				
-			}
 		}
 		return true;
 	}
@@ -229,11 +208,6 @@ public class MainMenu implements Screen, InputProcessor {
 			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3)
 					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*3)-(OPTION_OFFSET*3) + OPTION_HEIGHT) {
 				selectedOption = 3;
-				optionHover = true;
-			}
-			else if(newScreenY > ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4)
-					&& newScreenY < ((Gdx.graphics.getHeight()/2)-40)-(OPTION_HEIGHT*4)-(OPTION_OFFSET*4) + OPTION_HEIGHT) {
-				selectedOption = 4;
 				optionHover = true;
 			}
 			else {

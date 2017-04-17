@@ -17,30 +17,27 @@ import java.util.List;
 /**
  * Created by user on 3/18/2017.
  */
-public class AI {
+public class NeuralNetAI {
     private Piece[][] board;
     private MultiLayerNetwork network;
 
-    public static DataSet d;
-
-    public AI(Piece[][] board) {
+    public NeuralNetAI(Piece[][] board) {
         this.board = board;
         this.network = BoardClassifier.getModel();
     }
 
-    public Move getMove(Piece[][] nBoard) {
+    public Move getMove(Piece[][] nBoard, int teamNum, boolean showText, boolean randomMoves) {
         this.board = nBoard;
-
-        System.out.println("Finding all possible moves.");
+        if(showText) System.out.println("Finding all possible moves.");
         //Find all possible moves
         ArrayList<Move> possibleMoves = new ArrayList<Move>();
         for(int x1 = 0; x1 < Board.DEFAULT_BOARD_SIZE; x1++) {
             for(int y1 = 0; y1 < Board.DEFAULT_BOARD_SIZE; y1++) {
                 for(int x2 = 0; x2 < Board.DEFAULT_BOARD_SIZE; x2++) {
                     for(int y2 = 0; y2 < Board.DEFAULT_BOARD_SIZE; y2++) {
-                        if(checkMove(new Point(x1,y1), new Point(x2,y2))) {
+                        if(checkMove(new Point(x1,y1), new Point(x2,y2), teamNum)) {
                             Move m = new Move(new Point(x1,y1), new Point(x2,y2));
-                            System.out.println(m.toString());
+                            if(showText) System.out.println(m.toString());
                             possibleMoves.add(m);
                         }
                     }
@@ -48,7 +45,7 @@ public class AI {
             }
         }
 
-        System.out.println("Finding all possible boards.");
+        if(showText) System.out.println("Finding all possible boards.");
         //Use list of possible moves to make list of possible boards
         ArrayList<Piece[][]> possibleBoards = new ArrayList<Piece[][]>();
         Board temp = new Board();
@@ -60,28 +57,34 @@ public class AI {
             temp.setBoard(Board.cloneBoard(this.board));
         }
 
-        System.out.println("Finding the board with the highest score.");
+        if(showText) System.out.println("Finding the board with the highest score.");
         //Find the board with the highest score
         if(!possibleBoards.isEmpty()) {
-            int highestScoreIndex = -1;
-            float highscore = 0;
-            for(int x = 0; x < possibleBoards.size(); x++) {
-                if(x != -1) {
-                    float score = getScore(possibleBoards.get(x));
-                    if(score >highscore) {
+            if(randomMoves) {
+                int rnd = (int)(Math.random()*possibleBoards.size());
+                return possibleMoves.get(rnd);
+            }
+            else {
+                int highestScoreIndex = -1;
+                float highscore = 0;
+                for (int x = 0; x < possibleBoards.size(); x++) {
+                    if (x != -1) {
+                        float score = getScore(possibleBoards.get(x));
+                        int rnd = (int) (Math.random() * 2);
+                        if (score > highscore && rnd == 1) {
+                            highestScoreIndex = x;
+                            highscore = score;
+                        }
+                    } else {
                         highestScoreIndex = x;
-                        highscore = score;
                     }
                 }
-                else {
-                    highestScoreIndex = x;
-                }
+                if (showText) System.out.println("Current board state: \n" + boardString(this.board));
+                if (showText) System.out.println("Desired board state: \n" + boardString(possibleBoards.get(highestScoreIndex)));
+                if (showText) System.out.println("Desired move: " + possibleMoves.get(highestScoreIndex));
+                if (showText) System.out.println("Desired board's score: " + highscore);
+                return possibleMoves.get(highestScoreIndex);
             }
-            System.out.println("Current board state: \n" + boardString(this.board));
-            System.out.println("Desired board state: \n" + boardString(possibleBoards.get(highestScoreIndex)));
-            System.out.println("Desired move: " + possibleMoves.get(highestScoreIndex));
-            System.out.println("Desired board's score: " + highscore);
-            return possibleMoves.get(highestScoreIndex);
         }
         return null;
     }
@@ -104,14 +107,12 @@ public class AI {
         //Get the input
         INDArray input = getINDArray(board);
         //Reformat input
-        input = Nd4j.toFlattened(input);
-        input = Nd4j.vstack(input);
         //get output
         INDArray output = network.output(input,false);
         return output.getFloat(0);
     }
 
-    public boolean checkMove(Point p1, Point p2) {
+    public boolean checkMove(Point p1, Point p2, int teamNum) {
         int x1 = p1.x;
         int y1 = p1.y;
         int x2 = p2.x;
@@ -126,7 +127,7 @@ public class AI {
                 || board[x1][y1].getRank() == 'B'
                 || board[x1][y1].getRank() == 'F') { //Illegal moves
             return false;
-        } else if (board[x1][y1].getTeamNumber() != 1){
+        } else if (board[x1][y1].getTeamNumber() != teamNum){
             return false;
         } else if ((board[x1][y1].getRank() != '9') &&
                 ((Math.abs(x1 - x2) > 1 || Math.abs(y1 - y2) > 1) //Move must be 1 space away (non-scout)
@@ -214,7 +215,7 @@ public class AI {
         return false;
     }
 
-    public INDArray getINDArray(Piece[][] board) {
+    public static INDArray getINDArray(Piece[][] board) {
         float[][] b1 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Player's immoveable pieces
         float[][] b2 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Player's movable pieces
         float[][] b3 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Opponents's known movable pieces
@@ -311,6 +312,10 @@ public class AI {
             }
         }
         INDArray nd = Nd4j.create(f, new int[]{6,10,10});
+
+        nd = Nd4j.toFlattened(nd);
+        nd = Nd4j.vstack(nd);
+
         return nd;
     }
 }
