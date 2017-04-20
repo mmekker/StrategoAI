@@ -89,28 +89,33 @@ public class Match {
 	public static void main(String[] args) {
 		System.out.println("Load NeuralNetwork");
 		NeuralNetAI Ai1 = null;
+		//Ai1 = new NeuralNetAI(null);
 		try {
 			Ai1 = new NeuralNetAI(null, NeuralNetAI.loadNet());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		MultiLayerNetwork network = Ai1.getNetwork();
-		//NeuralNetAI Ai1 = new NeuralNetAI(board.getBoard());
 		//Get data
 		ArrayList<DataSet> data = new ArrayList<DataSet>();
-		int numOfGames = 1000;
+
+		int numOfGames = 10;
+		DataSetIterator iter = new ListDataSetIterator(data);
+
 		System.out.println("Playing " + numOfGames + " games.");
 		for(int x = 0; x < numOfGames; x++) {
 			System.out.println("Game " + x + ":");
 			data.addAll(playGame(false));
+			iter = new ListDataSetIterator(data);
+			//train
+			System.out.println("Training over " + data.size() + " DataSets...");
+			while(iter.hasNext()) {
+				DataSet next = iter.next();
+				network.fit(next);
+			}
+
 		}
-		DataSetIterator iter = new ListDataSetIterator(data);
-		//train
-		System.out.println("Training over " + data.size() + " DataSets...");
-		while(iter.hasNext()) {
-			DataSet next = iter.next();
-			network.fit(next);
-		}
+
 		//eval
 		iter.reset();
 		System.out.println("Evaluating...");
