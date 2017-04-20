@@ -5,12 +5,15 @@ import com.game.stratego.core.stratego.Move;
 import com.game.stratego.core.stratego.Piece;
 import org.deeplearning4j.datasets.iterator.BaseDatasetIterator;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.cpu.nativecpu.NDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -24,6 +27,11 @@ public class NeuralNetAI {
     public NeuralNetAI(Piece[][] board) {
         this.board = board;
         this.network = BoardClassifier.getModel();
+    }
+
+    public NeuralNetAI(Piece[][] board, MultiLayerNetwork network) {
+        this.board = board;
+        this.network = network;
     }
 
     public Move getMove(Piece[][] nBoard, int teamNum, boolean showText, boolean randomMoves) {
@@ -87,6 +95,17 @@ public class NeuralNetAI {
             }
         }
         return null;
+    }
+
+    public void saveNet() throws IOException {
+        File locationToSave = new File("assets/net/NeuralNetwork.zip");
+        boolean saveUpdater = true;
+        ModelSerializer.writeModel(this.network, locationToSave, saveUpdater);
+    }
+
+    public static MultiLayerNetwork loadNet() throws IOException {
+        File locationToSave = new File("assets/net/NeuralNetwork.zip");
+        return ModelSerializer.restoreMultiLayerNetwork(locationToSave);
     }
 
     public String boardString(Piece[][] b) {
@@ -317,5 +336,9 @@ public class NeuralNetAI {
         nd = Nd4j.vstack(nd);
 
         return nd;
+    }
+
+    public MultiLayerNetwork getNetwork() {
+        return this.network;
     }
 }

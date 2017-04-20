@@ -10,7 +10,7 @@
         <module name="stratego-desktop" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="stratego" target="1.6" />
       <module name="stratego-core" target="1.6" />
       <module name="stratego-desktop" target="1.6" />
