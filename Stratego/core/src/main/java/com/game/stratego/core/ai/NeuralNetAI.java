@@ -19,14 +19,18 @@ public class NeuralNetAI {
     private Piece[][] board;
     private MultiLayerNetwork network;
 
-    public NeuralNetAI(Piece[][] board) {
-        this.board = board;
-        this.network = BoardClassifier.getModel();
-    }
-
-    public NeuralNetAI(Piece[][] board, MultiLayerNetwork network) {
-        this.board = board;
-        this.network = network;
+    public NeuralNetAI(boolean isNewNetwork) {
+        if(isNewNetwork) {
+            this.network = BoardClassifier.getModel();
+        }
+        else {
+            try {
+                this.network = NeuralNetAI.loadNet();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        this.board = null;
     }
 
     public Move getMove(Piece[][] nBoard, int teamNum, boolean showText, boolean randomMoves) {
@@ -71,8 +75,9 @@ public class NeuralNetAI {
                 int highestScoreIndex = -1;
                 float highscore = 0;
                 for (int x = 0; x < possibleBoards.size(); x++) {
-                    if (x != -1) {
-                        float score = getScore(possibleBoards.get(x));
+                    float score = getScore(possibleBoards.get(x));
+                    System.out.println("Score " + x + ": " + score);
+                    if (highestScoreIndex != -1) {
                         int rnd = (int) (Math.random() * 2);
                         if (score > highscore && rnd == 1) {
                             highestScoreIndex = x;
@@ -80,6 +85,7 @@ public class NeuralNetAI {
                         }
                     } else {
                         highestScoreIndex = x;
+                        highscore = score;
                     }
                 }
                 if (showText) System.out.println("Current board state: \n" + boardString(this.board));

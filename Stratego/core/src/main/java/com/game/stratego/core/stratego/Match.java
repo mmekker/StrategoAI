@@ -28,7 +28,7 @@ public class Match {
 		this.game = game;
 		getGameBoard().createComputerSetup();
 		//getGameBoard().createPlayerSetup();
-		computerPlayer = new NeuralNetAI(this.getBoard().clone());
+		computerPlayer = new NeuralNetAI(false);
 	}
 
 
@@ -89,12 +89,7 @@ public class Match {
 	public static void main(String[] args) {
 		System.out.println("Load NeuralNetwork");
 		NeuralNetAI Ai1 = null;
-		//Ai1 = new NeuralNetAI(null);
-		try {
-			Ai1 = new NeuralNetAI(null, NeuralNetAI.loadNet());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Ai1 = new NeuralNetAI(true);
 		MultiLayerNetwork network = Ai1.getNetwork();
 		//Get data
 		ArrayList<DataSet> data = new ArrayList<DataSet>();
@@ -113,7 +108,14 @@ public class Match {
 				DataSet next = iter.next();
 				network.fit(next);
 			}
-
+            //Save network
+            System.out.println("Saving network.");
+            try {
+                Ai1.saveNet();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+			data = new ArrayList<DataSet>();
 		}
 
 		//eval
@@ -129,6 +131,7 @@ public class Match {
 		System.out.println(eval.stats());
 
 		//Save network
+        System.out.println("Saving network.");
 		try {
 			Ai1.saveNet();
 		} catch(IOException e) {
@@ -148,7 +151,7 @@ public class Match {
 		float dataset2Label = 0;
 		ArrayList<INDArray> dataset2 = new ArrayList<INDArray>();
 		if(DEBUG) System.out.println("     Create Ai1");
-		NeuralNetAI Ai1 = new NeuralNetAI(board.getBoard());
+		NeuralNetAI Ai1 = new NeuralNetAI(true);
 		int turnNum = 0;
 		System.out.println("     Start game.");
 		while(board.isGameFinished() != true) {

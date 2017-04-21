@@ -16,29 +16,31 @@ public class BoardClassifier {
 
 
     public static MultiLayerNetwork getModel() {
-        ConvolutionLayer layer0 = new ConvolutionLayer.Builder(5,5)
+        ConvolutionLayer layer0 = new ConvolutionLayer.Builder(2,2)
                 .nIn(6)
                 .nOut(20)
                 .stride(1,1)
-                .padding(2,2)
+                .padding(0,0)
                 .weightInit(WeightInit.XAVIER)
                 .name("First convolution layer")
                 .activation(Activation.RELU)
                 .build();
-        ConvolutionLayer layer1 = new ConvolutionLayer.Builder(5,5)
+        /*ConvolutionLayer layer1 = new ConvolutionLayer.Builder(2,2)
+                .nIn(20)
                 .nOut(40)
                 .stride(1,1)
-                .padding(2,2)
+                .padding(0,0)
                 .weightInit(WeightInit.XAVIER)
-                .name("First convolution layer")
+                .name("Second convolution layer")
                 .activation(Activation.RELU)
-                .build();
+                .build();*/
         DenseLayer layer2 = new DenseLayer.Builder().activation(Activation.RELU)
-                .nOut(100)
+                .nOut(40)
                 .build();
-        DenseLayer layer3 = new DenseLayer.Builder().activation(Activation.RELU)
-                .nOut(200)
-                .build();
+        /*DenseLayer layer3 = new DenseLayer.Builder().activation(Activation.RELU)
+                .nIn(40)
+                .nOut(80)
+                .build();*/
         OutputLayer layer4 = new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                 .nOut(1)
                 .activation(Activation.SOFTMAX)
@@ -58,10 +60,10 @@ public class BoardClassifier {
                 .momentum(0.9)
                 .list()
                 .layer(0, layer0)
-                .layer(1, layer1)
-                .layer(2, layer2)
-                .layer(3, layer3)
-                .layer(4, layer4)
+                //.layer(1, layer1)
+                .layer(1, layer2)
+                //.layer(3, layer3)
+                .layer(2, layer4)
                 .pretrain(false)
                 .backprop(true)
                 .setInputType(InputType.convolutionalFlat(10,10,6))

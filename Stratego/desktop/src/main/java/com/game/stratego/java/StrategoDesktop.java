@@ -8,7 +8,7 @@ import com.game.stratego.core.stratego.Match;
 
 public class StrategoDesktop {
 	public static void main (String[] args) {
-		boolean train = true;
+		boolean train = false;
 		if(train) {
 			Match.main(null);
 		}
