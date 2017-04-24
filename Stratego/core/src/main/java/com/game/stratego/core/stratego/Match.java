@@ -61,7 +61,7 @@ public class Match {
 			}
 			else {
 				Piece[][] temp = Board.cloneBoard(this.getBoard());
-				Move m = computerPlayer.getMove(temp, 0, true, false);
+				Move m = computerPlayer.getMove(temp, 0, true, true);
 				if(m == null) {
 					this.getGameBoard().setGameFinished(true);
 					this.getGameBoard().setWinner(1);
@@ -89,12 +89,12 @@ public class Match {
 	public static void main(String[] args) {
 		System.out.println("Load NeuralNetwork");
 		NeuralNetAI Ai1 = null;
-		Ai1 = new NeuralNetAI(false);
+		Ai1 = new NeuralNetAI(true);
 		MultiLayerNetwork network = Ai1.getNetwork();
 		//Get data
 		ArrayList<DataSet> data = new ArrayList<DataSet>();
 
-		int numOfGames = 5;
+		int numOfGames = 20;
 		DataSetIterator iter = new ListDataSetIterator(data);
 
 		System.out.println("Playing " + numOfGames + " games.");
@@ -146,7 +146,7 @@ public class Match {
 
 	public static ArrayList<DataSet> playGame(boolean debug) {
 		boolean DEBUG = debug;
-		boolean randomMoves = false;
+		boolean randomMoves = true;
 		//Create initial board
 		Board board = new Board();
 		board.createComputerSetup();
@@ -179,7 +179,7 @@ public class Match {
 			}
 			if(turnNum == 1) { //Ai2
 				if(DEBUG) System.out.println("     Ai2's turn");
-				Move m = Ai1.getMove(Board.cloneBoard(board.getBoard()), 1, false, randomMoves);
+				Move m = Ai1.getMove(Board.cloneBoard(board.getBoard()), 1, false, true);
 				if(m == null) {
 					turnNum = 0;
 					break;
@@ -189,8 +189,8 @@ public class Match {
 				int x2 = m.destination.x;
 				int y2 = m.destination.y;
 				board.movePiece(x1, y1, x2, y2);
-				INDArray b = NeuralNetAI.getINDArray(board.getBoard());
-				dataset2.add(b);
+				//INDArray b = NeuralNetAI.getINDArray(board.getBoard());
+				//dataset2.add(b);
 				turnNum = 0;
 			}
 		}
@@ -220,7 +220,7 @@ public class Match {
 			d1.add(new DataSet(data1,label1));
 		}
 
-		if(DEBUG) System.out.println("     Create d2");
+		/*if(DEBUG) System.out.println("     Create d2");
 		ArrayList<DataSet> d2 = new ArrayList<DataSet>();
 		float[] f2 = new float[2];
 		f2[0] = dataset2Label;
@@ -232,7 +232,7 @@ public class Match {
 		}
 		if(DEBUG) System.out.println("     Combine + Print d1");
 		//Combine
-		d1.addAll(d2);
+		d1.addAll(d2);*/
 		if(DEBUG) {
 			for(DataSet d : d1) {
 				System.out.println(d.toString());

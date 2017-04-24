@@ -79,7 +79,7 @@ public class NeuralNetAI {
                     double score = getScore(possibleBoards.get(x));
                     //System.out.println("Score " + x + ": " + score);
                     if (highestScoreIndex != -1) {
-                        if (score > (highscore-0.005f) && betterMove(possibleMoves.get(x), possibleMoves.get(highestScoreIndex), teamNum)) {
+                        if (score > (highscore-0.0001f) && betterMove(possibleMoves.get(x), possibleMoves.get(highestScoreIndex), teamNum)) {
                             highestScoreIndex = x;
                             highscore = score;
                         }
