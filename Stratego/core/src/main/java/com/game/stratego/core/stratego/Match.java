@@ -59,9 +59,9 @@ public class Match {
 					}
 				}
 			}
-			/*else {
+			else {
 				Piece[][] temp = Board.cloneBoard(this.getBoard());
-				Move m = computerPlayer.getMove(temp, 0, true, true);
+				Move m = computerPlayer.getMove(temp, 0, true, false);
 				if(m == null) {
 					this.getGameBoard().setGameFinished(true);
 					this.getGameBoard().setWinner(1);
@@ -79,7 +79,7 @@ public class Match {
 						game.setMessage("Error with AI Move.");
 					}
 				}
-			}*/
+			}
 			if (board.isGameFinished()) {
 				state = "end";
 			}
@@ -89,25 +89,39 @@ public class Match {
 	public static void main(String[] args) {
 		System.out.println("Load NeuralNetwork");
 		NeuralNetAI Ai1 = null;
-		Ai1 = new NeuralNetAI(true);
+		Ai1 = new NeuralNetAI(false);
 		MultiLayerNetwork network = Ai1.getNetwork();
 		//Get data
 		ArrayList<DataSet> data = new ArrayList<DataSet>();
 
-		int numOfGames = 10;
+		int numOfGames = 5;
 		DataSetIterator iter = new ListDataSetIterator(data);
 
 		System.out.println("Playing " + numOfGames + " games.");
 		for(int x = 0; x < numOfGames; x++) {
 			System.out.println("Game " + x + ":");
 			data.addAll(playGame(false));
-			iter = new ListDataSetIterator(data);
+			iter = new ListDataSetIterator(data, 1);
 			//train
 			System.out.println("Training over " + data.size() + " DataSets...");
 			while(iter.hasNext()) {
 				DataSet next = iter.next();
 				network.fit(next);
+				INDArray predict2 = network.output(next.getFeatureMatrix());
+				System.out.println("output: " + predict2.toString());
 			}
+
+			//eval
+			iter.reset();
+			System.out.println("Evaluating...");
+			Evaluation eval = new Evaluation();
+			while (iter.hasNext()) {
+				DataSet next = iter.next();
+				INDArray predict2 = network.output(next.getFeatureMatrix());
+				eval.eval(next.getLabels(), predict2);
+			}
+
+			System.out.println(eval.stats());
             //Save network
             System.out.println("Saving network.");
             try {
@@ -118,17 +132,7 @@ public class Match {
 			data = new ArrayList<DataSet>();
 		}
 
-		//eval
-		iter.reset();
-		System.out.println("Evaluating...");
-		Evaluation eval = new Evaluation();
-		while (iter.hasNext()) {
-			DataSet next = iter.next();
-			INDArray predict2 = network.output(next.getFeatureMatrix());
-			eval.eval(next.getLabels(), predict2);
-		}
 
-		System.out.println(eval.stats());
 
 		//Save network
         System.out.println("Saving network.");
@@ -137,10 +141,12 @@ public class Match {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Network Saved.");
 	}
 
 	public static ArrayList<DataSet> playGame(boolean debug) {
 		boolean DEBUG = debug;
+		boolean randomMoves = false;
 		//Create initial board
 		Board board = new Board();
 		board.createComputerSetup();
@@ -151,13 +157,13 @@ public class Match {
 		float dataset2Label = 0;
 		ArrayList<INDArray> dataset2 = new ArrayList<INDArray>();
 		if(DEBUG) System.out.println("     Create Ai1");
-		NeuralNetAI Ai1 = new NeuralNetAI(true);
+		NeuralNetAI Ai1 = new NeuralNetAI(false);
 		int turnNum = 0;
 		System.out.println("     Start game.");
 		while(board.isGameFinished() != true) {
 			if(turnNum == 0) { //Ai1
 				if(DEBUG) System.out.println("     Ai1's turn");
-				Move m = Ai1.getMove(Board.cloneBoard(board.getBoard()), 0, false, true);
+				Move m = Ai1.getMove(Board.cloneBoard(board.getBoard()), 0, false, randomMoves);
 				if(m == null) {
 					turnNum = 1;
 					break;
@@ -173,7 +179,7 @@ public class Match {
 			}
 			if(turnNum == 1) { //Ai2
 				if(DEBUG) System.out.println("     Ai2's turn");
-				Move m = Ai1.getMove(Board.cloneBoard(board.getBoard()), 1, false, true);
+				Move m = Ai1.getMove(Board.cloneBoard(board.getBoard()), 1, false, randomMoves);
 				if(m == null) {
 					turnNum = 0;
 					break;
@@ -200,23 +206,27 @@ public class Match {
 			dataset1Label = 0;
 			dataset2Label = 1;
 		}
-		MultiLayerNetwork network = Ai1.getNetwork();
+
 		//iterate through dataset arrays and set labels
 
 		if(DEBUG) System.out.println("     Create d1");
 		ArrayList<DataSet> d1 = new ArrayList<DataSet>();
-		float[] f1 = new float[1];
+		float[] f1 = new float[2];
 		f1[0] = dataset1Label;
-		INDArray label1 = Nd4j.create(f1, new int[]{1});
+		f1[1] = dataset2Label;
+		INDArray label1 = Nd4j.create(f1, new int[]{2});
+		int x = 0;
 		for(INDArray data1:dataset1) {
 			d1.add(new DataSet(data1,label1));
 		}
 
 		if(DEBUG) System.out.println("     Create d2");
 		ArrayList<DataSet> d2 = new ArrayList<DataSet>();
-		float[] f2 = new float[1];
+		float[] f2 = new float[2];
 		f2[0] = dataset2Label;
-		INDArray label2 = Nd4j.create(f2, new int[]{1});
+		f2[1] = dataset1Label;
+		INDArray label2 = Nd4j.create(f2, new int[]{2});
+		x = 0;
 		for(INDArray data2:dataset2) {
 			d2.add(new DataSet(data2,label2));
 		}

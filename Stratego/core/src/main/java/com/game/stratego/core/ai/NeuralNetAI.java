@@ -7,6 +7,7 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.ops.transforms.Transforms;
 
 import java.awt.*;
 import java.io.File;
@@ -73,13 +74,12 @@ public class NeuralNetAI {
             }
             else {
                 int highestScoreIndex = -1;
-                float highscore = 0;
+                double highscore = 0;
                 for (int x = 0; x < possibleBoards.size(); x++) {
-                    float score = getScore(possibleBoards.get(x));
-                    System.out.println("Score " + x + ": " + score);
+                    double score = getScore(possibleBoards.get(x));
+                    //System.out.println("Score " + x + ": " + score);
                     if (highestScoreIndex != -1) {
-                        int rnd = (int) (Math.random() * 2);
-                        if (score > highscore && rnd == 1) {
+                        if (score > (highscore-0.005f) && betterMove(possibleMoves.get(x), possibleMoves.get(highestScoreIndex), teamNum)) {
                             highestScoreIndex = x;
                             highscore = score;
                         }
@@ -96,6 +96,47 @@ public class NeuralNetAI {
             }
         }
         return null;
+    }
+
+    public boolean betterMove(Move m1, Move m2, int teamNum) {
+        if(teamNum == 0) {
+            if(m1.source.y < m1.destination.y) {
+                return true;
+            }
+            else if(m2.source.y < m2.destination.y) {
+                return false;
+            }
+            else if(m1.source.y == m1.destination.y
+                    && m2.source.y > m2.destination.y) {
+                return true;
+            }
+            else if(m2.source.y == m2.destination.y
+                    && m1.source.y > m1.destination.y) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            if(m1.source.y > m1.destination.y) {
+                return true;
+            }
+            else if(m2.source.y > m2.destination.y) {
+                return false;
+            }
+            else if(m1.source.y == m1.destination.y
+                    && m2.source.y < m2.destination.y) {
+                return true;
+            }
+            else if(m2.source.y == m2.destination.y
+                    && m1.source.y < m1.destination.y) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
     }
 
     public void saveNet() throws IOException {
@@ -123,13 +164,13 @@ public class NeuralNetAI {
         return str;
     }
 
-    public float getScore(Piece[][] board) {
+    public double getScore(Piece[][] board) {
         //Get the input
         INDArray input = getINDArray(board);
         //Reformat input
         //get output
-        INDArray output = network.output(input,false);
-        return output.getFloat(0);
+        INDArray output = network.output(input,true);
+        return output.getDouble(0);
     }
 
     public boolean checkMove(Point p1, Point p2, int teamNum) {
@@ -255,45 +296,45 @@ public class NeuralNetAI {
                         b1[x][y] = 11;
                     }
                     else if (rank == 'S') {
-                        b2[x][y] = 12;
+                        b1[x][y] = 12;
                     }
                     else {
-                        b2[x][y] = (float)(Character.getNumericValue(rank));
+                        b1[x][y] = (float)(Character.getNumericValue(rank));
                     }
                 }
                 else {
                     char rank = board[x][y].getRank();
                     if(rank == 'F') {
-                        b6[x][y] = 10;
+                        b1[x][y] = 10;
                     }
                     else if (rank == 'B') {
                         if(board[x][y].isRevealed()) {
-                            b4[x][y] = 11;
+                            b1[x][y] = 11;
                         }
                         else {
-                            b6[x][y] = 11;
+                            b1[x][y] = 11;
                         }
                     }
                     else if (rank == 'S') {
                         if(board[x][y].hasMoved()) {
-                            b3[x][y] = 12;
+                            b1[x][y] = 12;
                         }
                         else {
-                            b5[x][y] = 12;
+                            b1[x][y] = 12;
                         }
                     }
                     else {
                         if(board[x][y].hasMoved()) {
-                            b3[x][y] = (float)(Character.getNumericValue(rank));
+                            b1[x][y] = getFloat(rank);
                         }
                         else {
-                            b5[x][y] = (float)(Character.getNumericValue(rank));
+                            b1[x][y] = getFloat(rank);
                         }
                     }
                 }
             } //End for y
         } //End for x
-        float[] f = new float[(Board.DEFAULT_BOARD_SIZE * Board.DEFAULT_BOARD_SIZE) * 6];
+        float[] f = new float[(Board.DEFAULT_BOARD_SIZE * Board.DEFAULT_BOARD_SIZE) * 1];
         int index = 0;
         for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
@@ -301,6 +342,7 @@ public class NeuralNetAI {
                 index++;
             }
         }
+        /*
         for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
                 f[index] = b2[x][y];
@@ -330,13 +372,50 @@ public class NeuralNetAI {
                 f[index] = b6[x][y];
                 index++;
             }
-        }
-        INDArray nd = Nd4j.create(f, new int[]{6,10,10});
+        }*/
+        INDArray nd = Nd4j.create(f, new int[]{10,10});
 
+        nd = Transforms.normalizeZeroMeanAndUnitVariance(nd);
         nd = Nd4j.toFlattened(nd);
         nd = Nd4j.vstack(nd);
 
         return nd;
+    }
+
+    public static float getFloat(char rank) {
+        float f = 0;
+        switch(rank) {
+            case '1':
+                f = 1;
+                break;
+            case '2':
+                f = 2;
+                break;
+            case '3':
+                f = 3;
+                break;
+            case '4':
+                f = 4;
+                break;
+            case '5':
+                f = 5;
+                break;
+            case '6':
+                f = 6;
+                break;
+            case '7':
+                f = 7;
+                break;
+            case '8':
+                f = 8;
+                break;
+            case '9':
+                f = 9;
+                break;
+            default:
+                f = 0;
+        }
+        return f;
     }
 
     public MultiLayerNetwork getNetwork() {
