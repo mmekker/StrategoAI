@@ -20,13 +20,13 @@ public class NeuralNetAI {
     private Piece[][] board;
     private MultiLayerNetwork network;
 
-    public NeuralNetAI(boolean isNewNetwork) {
+    public NeuralNetAI(boolean isNewNetwork, String path) {
         if(isNewNetwork) {
             this.network = BoardClassifier.getModel();
         }
         else {
             try {
-                this.network = NeuralNetAI.loadNet();
+                this.network = NeuralNetAI.loadNet(path);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -76,10 +76,16 @@ public class NeuralNetAI {
                 int highestScoreIndex = -1;
                 double highscore = 0;
                 for (int x = 0; x < possibleBoards.size(); x++) {
-                    double score = getScore(possibleBoards.get(x));
+                    double score;
+                    if(teamNum == 1) {
+                        score = getScore(possibleBoards.get(x));
+                    }
+                    else {
+                        score = getScoreFlipped(possibleBoards.get(x));
+                    }
                     //System.out.println("Score " + x + ": " + score);
                     if (highestScoreIndex != -1) {
-                        if (score > (highscore-0.0001f) && betterMove(possibleMoves.get(x), possibleMoves.get(highestScoreIndex), teamNum)) {
+                        if (score > (highscore)) {
                             highestScoreIndex = x;
                             highscore = score;
                         }
@@ -97,56 +103,14 @@ public class NeuralNetAI {
         }
         return null;
     }
-
-    public boolean betterMove(Move m1, Move m2, int teamNum) {
-        if(teamNum == 0) {
-            if(m1.source.y < m1.destination.y) {
-                return true;
-            }
-            else if(m2.source.y < m2.destination.y) {
-                return false;
-            }
-            else if(m1.source.y == m1.destination.y
-                    && m2.source.y > m2.destination.y) {
-                return true;
-            }
-            else if(m2.source.y == m2.destination.y
-                    && m1.source.y > m1.destination.y) {
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
-        else {
-            if(m1.source.y > m1.destination.y) {
-                return true;
-            }
-            else if(m2.source.y > m2.destination.y) {
-                return false;
-            }
-            else if(m1.source.y == m1.destination.y
-                    && m2.source.y < m2.destination.y) {
-                return true;
-            }
-            else if(m2.source.y == m2.destination.y
-                    && m1.source.y < m1.destination.y) {
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
-    }
-
     public void saveNet() throws IOException {
         File locationToSave = new File("assets/net/NeuralNetwork.zip");
         boolean saveUpdater = true;
         ModelSerializer.writeModel(this.network, locationToSave, saveUpdater);
     }
 
-    public static MultiLayerNetwork loadNet() throws IOException {
-        File locationToSave = new File("assets/net/NeuralNetwork.zip");
+    public static MultiLayerNetwork loadNet(String path) throws IOException {
+        File locationToSave = new File("assets/net/"+path);
         return ModelSerializer.restoreMultiLayerNetwork(locationToSave);
     }
 
@@ -167,6 +131,15 @@ public class NeuralNetAI {
     public double getScore(Piece[][] board) {
         //Get the input
         INDArray input = getINDArray(board);
+        //Reformat input
+        //get output
+        INDArray output = network.output(input,true);
+        return output.getDouble(0);
+    }
+
+    public double getScoreFlipped(Piece[][] board) {
+        //Get the input
+        INDArray input = getINDArrayFlipped(board);
         //Reformat input
         //get output
         INDArray output = network.output(input,true);
@@ -278,106 +251,125 @@ public class NeuralNetAI {
 
     public static INDArray getINDArray(Piece[][] board) {
         float[][] b1 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Player's immoveable pieces
-        float[][] b2 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Player's movable pieces
-        float[][] b3 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Opponents's known movable pieces
-        float[][] b4 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Opponent's known bombs
-        float[][] b5 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Opponents unknown moved pieces
-        float[][] b6 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Opponents unknown unmoved pieces
 
-        for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
-            for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
+        for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
+            for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
                 if(board[x][y] == null) {continue;}
                 if(board[x][y].getTeamNumber() == 1) {
                     char rank = board[x][y].getRank();
                     if(rank == 'F') {
-                        b1[x][y] = 10;
+                        b1[x][y] = 12;
                     }
                     else if (rank == 'B') {
                         b1[x][y] = 11;
                     }
                     else if (rank == 'S') {
-                        b1[x][y] = 12;
+                        b1[x][y] = 10;
                     }
                     else {
-                        b1[x][y] = (float)(Character.getNumericValue(rank));
+                        b1[x][y] = getFloat(rank);
                     }
                 }
                 else {
                     char rank = board[x][y].getRank();
                     if(rank == 'F') {
-                        b1[x][y] = 10;
+                        b1[x][y] = 12 + 20;
                     }
                     else if (rank == 'B') {
-                        if(board[x][y].isRevealed()) {
-                            b1[x][y] = 11;
-                        }
-                        else {
-                            b1[x][y] = 11;
-                        }
+                        b1[x][y] = 11 + 20;
                     }
                     else if (rank == 'S') {
-                        if(board[x][y].hasMoved()) {
-                            b1[x][y] = 12;
-                        }
-                        else {
-                            b1[x][y] = 12;
-                        }
+                        b1[x][y] = 10 + 20;
                     }
                     else {
-                        if(board[x][y].hasMoved()) {
-                            b1[x][y] = getFloat(rank);
-                        }
-                        else {
-                            b1[x][y] = getFloat(rank);
-                        }
+                        b1[x][y] = getFloat(rank) + 20;
                     }
                 }
             } //End for y
         } //End for x
+        float min = 0;
+        float max = 32;
         float[] f = new float[(Board.DEFAULT_BOARD_SIZE * Board.DEFAULT_BOARD_SIZE) * 1];
         int index = 0;
         for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
             for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-                f[index] = b1[x][y];
+                if((b1[x][y]) != 0)
+                    f[index] = ((b1[x][y])-min)/(max-min);
+                else
+                    f[index] = 0;
                 index++;
             }
         }
-        /*
-        for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
-            for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-                f[index] = b2[x][y];
-                index++;
-            }
-        }
-        for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
-            for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-                f[index] = b3[x][y];
-                index++;
-            }
-        }
-        for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
-            for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-                f[index] = b4[x][y];
-                index++;
-            }
-        }
-        for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
-            for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-                f[index] = b5[x][y];
-                index++;
-            }
-        }
-        for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
-            for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
-                f[index] = b6[x][y];
-                index++;
-            }
-        }*/
-        INDArray nd = Nd4j.create(f, new int[]{10,10});
 
-        nd = Transforms.normalizeZeroMeanAndUnitVariance(nd);
-        nd = Nd4j.toFlattened(nd);
-        nd = Nd4j.vstack(nd);
+        INDArray nd = Nd4j.create(f, new int[]{1,1,10,10});
+
+        //nd = Transforms.normalizeZeroMeanAndUnitVariance(nd);
+        //nd = Nd4j.toFlattened(nd);
+        //nd = Nd4j.vstack(nd);
+
+        return nd;
+    }
+
+    public static INDArray getINDArrayFlipped(Piece[][] board) {
+        float[][] b1 = new float[Board.DEFAULT_BOARD_SIZE][Board.DEFAULT_BOARD_SIZE]; //Player's immoveable pieces
+
+        for(int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
+            for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
+                int nx = 9-x;
+                int ny = 9-y;
+
+                if(board[nx][ny] == null) {continue;}
+                if(board[nx][ny].getTeamNumber() == 1) {
+                    char rank = board[nx][ny].getRank();
+                    if(rank == 'F') {
+                        b1[nx][ny] = 12 + 20;
+                    }
+                    else if (rank == 'B') {
+                        b1[nx][ny] = 11 + 20;
+                    }
+                    else if (rank == 'S') {
+                        b1[nx][ny] = 10 + 20;
+                    }
+                    else {
+                        b1[nx][ny] = getFloat(rank) + 20;
+                    }
+                }
+                else {
+                    char rank = board[nx][ny].getRank();
+                    if(rank == 'F') {
+                        b1[nx][ny] = 12;
+                    }
+                    else if (rank == 'B') {
+                        b1[nx][ny] = 11;
+                    }
+                    else if (rank == 'S') {
+                        b1[nx][ny] = 10;
+                    }
+                    else {
+                        b1[nx][ny] = getFloat(rank);
+                    }
+                }
+            } //End for y
+        } //End for x
+        float min = 0;
+        float max = 32;
+        float[] f = new float[(Board.DEFAULT_BOARD_SIZE * Board.DEFAULT_BOARD_SIZE) * 1];
+        int index = 0;
+        for(int x = 0; x < Board.DEFAULT_BOARD_SIZE; x++) {
+            for (int y = 0; y < Board.DEFAULT_BOARD_SIZE; y++) {
+                if((b1[x][y]) != 0)
+                    f[index] = ((b1[x][y])-min)/(max-min);
+                else
+                    f[index] = 0;
+                index++;
+            }
+        }
+
+        INDArray nd = Nd4j.create(f, new int[]{1,1,10,10});
+
+        //nd = Transforms.normalizeZeroMeanAndUnitVariance(nd);
+        //nd = Nd4j.toFlattened(nd);
+        //nd = Nd4j.vstack(nd);
 
         return nd;
     }

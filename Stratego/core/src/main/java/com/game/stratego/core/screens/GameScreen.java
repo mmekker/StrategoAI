@@ -57,7 +57,8 @@ public class GameScreen implements Screen, InputProcessor {
 
 	private Match match;
 	private Point selected;
-	private String message;		//TODO: Add who took who into the messages
+	private String message;
+	private boolean helpMenu;
 	
 	public GameScreen(Stratego game) {
 		Gdx.input.setInputProcessor(this);
@@ -68,6 +69,7 @@ public class GameScreen implements Screen, InputProcessor {
 		match = new Match(this);
 		selected = null;
 		message = "";
+		helpMenu = true;
 	}
 
 	@Override
@@ -75,11 +77,12 @@ public class GameScreen implements Screen, InputProcessor {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		if(Gdx.input.isKeyPressed(Input.Keys.S)
-				&& match.getState().equals("make")) {
-			match.getGameBoard().createPlayerSetup();
+		if(!helpMenu){
+			if(Gdx.input.isKeyPressed(Input.Keys.S)
+					&& match.getState().equals("make")) {
+				match.getGameBoard().createPlayerSetup();
+			}
 		}
-
 		if(match.getGameBoard().isGameFinished()) {
 			if(match.getGameBoard().getWinner() == 0) {
 				setMessage("You win! Congratulations!");
@@ -100,11 +103,6 @@ public class GameScreen implements Screen, InputProcessor {
 		sr.rect(10, (Gdx.graphics.getHeight()-15), 20, 4);
 		sr.rect(10, (Gdx.graphics.getHeight()-20), 20, 4);
 
-		/*//Draw Turn Indicator
-		if(match.getCurrentTurn() == 0) sr.setColor(Color.BLUE);
-		else sr.setColor(Color.RED);
-		sr.rect((Gdx.graphics.getWidth()/2)-20, (Gdx.graphics.getHeight()-50), 40, 40);*/
-
 		drawBoardShapes();
 
 		//Draw trays
@@ -113,22 +111,37 @@ public class GameScreen implements Screen, InputProcessor {
 		//Draw message box
 		sr.setColor(Color.WHITE);
 		sr.rect((Gdx.graphics.getWidth()/2)-250, 15, 501, 30);
-		
+
+		if(helpMenu) {
+			drawHelpMenu();
+		}
+		else {
+			//Draw Turn Indicator
+			if(match.getCurrentTurn() == 0) sr.setColor(Color.BLUE);
+			else sr.setColor(Color.RED);
+			sr.rect((Gdx.graphics.getWidth()/2)-20, (Gdx.graphics.getHeight()-50), 40, 40);
+		}
+
 		sr.end();
 
 		batch.begin();
-		drawTrayTextures();
-		font.setColor(Color.BLACK);
-		font.draw(batch, message, ((Gdx.graphics.getWidth()/2)-(250)), 37);
+		if(helpMenu) {
+			writeHelpMenu();
+		}
+		else {
+			drawTrayTextures();
+			font.setColor(Color.BLACK);
+			font.draw(batch, message, ((Gdx.graphics.getWidth() / 2) - (250)), 37);
 
-		//Write Board text
-		drawBoardTextures();
+			//Write Board text
+			drawBoardTextures();
 
-		//Write Tray text
-		writeTrayText();
-		
+			//Write Tray text
+			writeTrayText();
+		}
 		batch.end();
 		match.update();
+
 	}
 
 	/************Start Draw Methods***************/
@@ -177,6 +190,13 @@ public class GameScreen implements Screen, InputProcessor {
 				batch.draw(current,(785)+(x+1)+(75*x), (80)+(y+1)+(75*y), 75, 75);
 			}
 		}
+	}
+
+	public void drawHelpMenu() {
+		sr.setColor(Color.BLACK);
+		int height = 300;
+		int width = 500;
+		sr.rect((Gdx.graphics.getWidth()/2)-(width/2), (Gdx.graphics.getHeight()/2)-(height/2), width, height);
 	}
 
 	public Texture getPieceTexture(char rank, int teamNum) {
@@ -273,6 +293,19 @@ public class GameScreen implements Screen, InputProcessor {
 			}
 		}
 	}
+
+	public void writeHelpMenu() {
+		font.setColor(Color.WHITE);
+		int windowWidth = Gdx.graphics.getWidth();
+		int windowHeight = Gdx.graphics.getHeight();
+		font.draw(batch, "Welcome to Stratego.", (windowWidth/2)-60, (windowHeight/2)+100);
+		font.draw(batch, "To start the game you must first place all of you pieces onto the board.", (windowWidth/2)-220, (windowHeight/2)+60);
+		font.draw(batch, "Do this by clicking on the type of piece you would like to place and then", (windowWidth/2)-220, (windowHeight/2)+40);
+		font.draw(batch, "clicking on the spot on the board you would like to place that piece.", (windowWidth/2)-220, (windowHeight/2)+20);
+		font.draw(batch, "Remember, you can only place one piece on each spot and only in the", (windowWidth/2)-220, (windowHeight/2)+0);
+		font.draw(batch, "bottom four rows. Press the 'S' key to get a 'quick setup'.", (windowWidth/2)-220, (windowHeight/2)-20);
+		font.draw(batch, "Click on this message to play.", (windowWidth/2)-80, (windowHeight/2)-100);
+	}
 	/**************End Draw Methods***************/
 	
 	public void setMessage(String message) {
@@ -305,71 +338,80 @@ public class GameScreen implements Screen, InputProcessor {
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		int newY = Gdx.graphics.getHeight() - screenY;
-		//Menu Button
-		if(screenX > 0 && screenX < 40
-				&& screenY > 0 && screenY < 25) {
-			game.setScreen(new MainMenu(game));
-			return true;
+		if(helpMenu) {
+			if(screenX > (Gdx.graphics.getWidth()/2)-250 && screenX < (Gdx.graphics.getWidth()/2)+250
+					&& newY > (Gdx.graphics.getHeight()/2)-150 && screenX < (Gdx.graphics.getHeight()/2)+150) {
+				helpMenu = false;
+			}
 		}
-		//Inside board
-		else if(screenX > (Gdx.graphics.getWidth()/2)-250 && screenX < (Gdx.graphics.getWidth()/2)+250
-				&& newY > (Gdx.graphics.getHeight()/2)-250 && newY < (Gdx.graphics.getHeight()/2)+250 ) {
-			int inBoardX = screenX - ((Gdx.graphics.getWidth()/2)-250);
-			int inBoardY = newY - ((Gdx.graphics.getHeight()/2)-250);
-			int row = inBoardX / 50;
-			int col = inBoardY / 50;
-			if(match.getState().equals("play")) {
-				if (selected == null) {
-					if (Board.isWater(row, col)
-							|| match.getBoard()[row][col] == null
-							|| match.getBoard()[row][col].getTeamNumber() != match.getCurrentTurn()) {
-						selected = null;
-						return false;
-					} else {
-						selected = new Point(row, col);
-						return true;
-					}
+		else {
+			//Menu Button
+			if(screenX > 0 && screenX < 40
+					&& screenY > 0 && screenY < 25) {
+				game.setScreen(new MainMenu(game));
+				return true;
+			}
+			//Inside board
+			else if(screenX > (Gdx.graphics.getWidth()/2)-250 && screenX < (Gdx.graphics.getWidth()/2)+250
+					&& newY > (Gdx.graphics.getHeight()/2)-250 && newY < (Gdx.graphics.getHeight()/2)+250 ) {
+				int inBoardX = screenX - ((Gdx.graphics.getWidth()/2)-250);
+				int inBoardY = newY - ((Gdx.graphics.getHeight()/2)-250);
+				int row = inBoardX / 50;
+				int col = inBoardY / 50;
+				if(match.getState().equals("play")) {
+					if (selected == null) {
+						if (Board.isWater(row, col)
+								|| match.getBoard()[row][col] == null
+								|| match.getBoard()[row][col].getTeamNumber() != match.getCurrentTurn()) {
+							selected = null;
+							return false;
+						} else {
+							selected = new Point(row, col);
+							return true;
+						}
 
-				} else {
-					if (match.getGameBoard().movePiece(selected.x, selected.y, row, col)) {
-						if (match.getCurrentTurn() == 0) match.setCurrentTurn(1);
-						else match.setCurrentTurn(0);
-						setMessage("Move (" + selected.x + "," + selected.y + ") to (" + row + "," + col + ")");
-						selected = null;
-						return true;
 					} else {
-						setMessage("Illegal Move");
-						selected = null;
-						return false;
+						if (match.getGameBoard().movePiece(selected.x, selected.y, row, col)) {
+							if (match.getCurrentTurn() == 0) match.setCurrentTurn(1);
+							else match.setCurrentTurn(0);
+							setMessage("Move (" + selected.x + "," + selected.y + ") to (" + row + "," + col + ")");
+							selected = null;
+							return true;
+						} else {
+							setMessage("Illegal Move");
+							selected = null;
+							return false;
+						}
 					}
 				}
-			}
-			else if(match.getState().equals("make")) {
-				if(selected != null) {
-					//Get Piece index
-					int i = (selected.y+selected.x)+(5*selected.x);
-					if(match.getGameBoard().getPlayerTray()[i].getRemaining() > 0) {
-						if(match.getBoard()[row][col] == null
-								&& col < (Board.DEFAULT_BOARD_SIZE/2)-1) {
-							match.getBoard()[row][col] = match.getGameBoard().getPlayerTray()[i].takePiece(0);
-							if(match.getGameBoard().isTrayEmpty(match.getGameBoard().getPlayerTray())) {
-								selected = null;
+				else if(match.getState().equals("make")) {
+					if(selected != null) {
+						//Get Piece index
+						int i = (selected.y+selected.x)+(5*selected.x);
+						if(match.getGameBoard().getPlayerTray()[i].getRemaining() > 0) {
+							if(match.getBoard()[row][col] == null
+									&& col < (Board.DEFAULT_BOARD_SIZE/2)-1) {
+								match.getBoard()[row][col] = match.getGameBoard().getPlayerTray()[i].takePiece(0);
+								if(match.getGameBoard().isTrayEmpty(match.getGameBoard().getPlayerTray())) {
+									selected = null;
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-		else if(screenX > 21 && screenX < 181
-				&& newY > 75 && newY < 555 ) { //Inside the left tray
-			int inBoardX = screenX - 21;
-			int inBoardY = newY - 75;
-			int row = inBoardX / 80;
-			int col = inBoardY / 80;
-			if(match.getState().equals("make")) {
-				selected = new Point(row,col);
+			else if(screenX > 21 && screenX < 181
+					&& newY > 75 && newY < 555 ) { //Inside the left tray
+				int inBoardX = screenX - 21;
+				int inBoardY = newY - 75;
+				int row = inBoardX / 80;
+				int col = inBoardY / 80;
+				if(match.getState().equals("make")) {
+					selected = new Point(row,col);
+				}
 			}
 		}
+
 		return false;
 	}
 	@Override

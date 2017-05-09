@@ -20,37 +20,6 @@ public class BoardClassifier {
 
 
     public static MultiLayerNetwork getModel() {
-        /*ConvolutionLayer layer0 = new ConvolutionLayer.Builder(2,2)
-                .nIn(6)
-                .nOut(20)
-                .stride(1,1)
-                .padding(0,0)
-                .weightInit(WeightInit.XAVIER)
-                .name("First convolution layer")
-                .activation(Activation.RELU)
-                .build();
-        ConvolutionLayer layer1 = new ConvolutionLayer.Builder(2,2)
-                .nIn(20)
-                .nOut(40)
-                .stride(1,1)
-                .padding(0,0)
-                .weightInit(WeightInit.XAVIER)
-                .name("Second convolution layer")
-                .activation(Activation.RELU)
-                .build();
-        DenseLayer dense1 = new DenseLayer.Builder().activation(Activation.RELU)
-                .weightInit(WeightInit.XAVIER)
-                .nIn(6)
-                .nOut(40)
-                .build();
-        DenseLayer dense2 = new DenseLayer.Builder().activation(Activation.RELU)
-                .nIn(40)
-                .nOut(80)
-                .build();
-        OutputLayer output = new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                .nOut(1)
-                .activation(Activation.SOFTMAX)
-                .build();*/
 
         ConvolutionLayer layer0 = new ConvolutionLayer.Builder(2,2)
                 .nIn(1)
@@ -61,7 +30,8 @@ public class BoardClassifier {
                 .name("First convolution layer")
                 .activation(Activation.RELU)
                 .build();
-        DenseLayer dense1 = new DenseLayer.Builder().activation(Activation.RELU)
+        DenseLayer dense1 = new DenseLayer.Builder()
+                .activation(Activation.RELU)
                 .weightInit(WeightInit.XAVIER)
                 .nOut(40)
                 .build();
@@ -73,45 +43,22 @@ public class BoardClassifier {
                 .nOut(2)
                 .build();
 
-
-
-
-        /*MultiLayerConfiguration configuration = new NeuralNetConfiguration.Builder()
-                .seed(12345)
-                .iterations(1)
-                .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-                .learningRate(0.001)
-                .regularization(true)
-                .l2(0.0004)
-                .updater(Updater.NESTEROVS)
-                .momentum(0.9)
-                .list()
-                .layer(0, layer0)
-                .layer(1, layer1)
-                .layer(0, dense1)
-                .layer(3, dense2)
-                .layer(1, output)
-                .pretrain(false)
-                .backprop(true)
-                .setInputType(InputType.convolutionalFlat(10,10,6))
-                .build();*/
-
         MultiLayerConfiguration configuration = new NeuralNetConfiguration.Builder()
                 .seed(12345)
                 .iterations(1)
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-                .learningRate(0.00001)
+                .learningRate(0.0009)
                 .regularization(true)
-                .l2(0.00004)
+                .l2(0.000003)
                 .updater(Updater.NESTEROVS)
-                .momentum(0.9)
+                .momentum(0.5)
                 .list()
                 .layer(0, layer0)
                 .layer(1, dense1)
                 .layer(2, layer6)
                 .pretrain(false)
                 .backprop(true)
-                .setInputType(InputType.convolutionalFlat(10,10,1))
+                .setInputType(InputType.convolutional(10,10,1))
                 .build();
 
         MultiLayerNetwork network = new MultiLayerNetwork(configuration);
