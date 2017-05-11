@@ -15,10 +15,7 @@ import com.game.stratego.core.Stratego;
 import com.game.stratego.core.stratego.Board;
 import com.game.stratego.core.stratego.Match;
 import com.game.stratego.core.stratego.TrayPiece;
-
 import java.awt.*;
-
-//import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
 public class GameScreen implements Screen, InputProcessor {
 	Stratego game;
@@ -60,13 +57,14 @@ public class GameScreen implements Screen, InputProcessor {
 	private String message;
 	private boolean helpMenu;
 	
-	public GameScreen(Stratego game) {
+	public GameScreen(Stratego game, boolean rnd) {
 		Gdx.input.setInputProcessor(this);
 		this.game = game;
 		sr = new ShapeRenderer();
 		font = new BitmapFont();
 		batch = new SpriteBatch();
 		match = new Match(this);
+		if(rnd) {match.useRandomMoves=true;System.out.println("RND");}
 		selected = null;
 		message = "";
 		helpMenu = true;

@@ -22,6 +22,7 @@ public class Match {
 
 	private int currentTurn; //0 = Player; 1 = Computer
 	private String state;
+	public boolean useRandomMoves = false;
 
 	public Match(GameScreen game) {
 		board = new Board();
@@ -43,7 +44,7 @@ public class Match {
 		} else if (state.equals("play")) {
 			if (currentTurn == 1) { //Computer turn
 				Piece[][] temp = Board.cloneBoard(this.getBoard());
-				Move m = computerPlayer.getMove(temp, 1, true, false);
+				Move m = computerPlayer.getMove(temp, 1, true, useRandomMoves);
 				if (m == null) {
 					this.getGameBoard().setGameFinished(true);
 					this.getGameBoard().setWinner(0);
